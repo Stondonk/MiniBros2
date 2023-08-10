@@ -100,6 +100,15 @@ export default class player{
 
         this.Running = false;
 
+        this.Climbing = false;
+        this.ClimbingPoint = {x:0,y:0};
+
+        this.PickUpOBJ = null;
+        this.PickUpPress = false;
+        this.OffSPickUpX = 0;
+        this.OffSPickUpY = 0;
+        this.PickUpHoldTime = 0;
+
         this.Currentspeed = 1200;
         this.spriteOffset = 0;
         this.spriteOffsetLayer = 0;
@@ -244,7 +253,8 @@ export default class player{
         //Bad way of doing it I know but what you gonna do about huh, yeah joe I know your looking hear get out shoo
         //flipSprite
         this.spriteOffsetLayer = Math.round((-this.Direction + 1) / 2);
-        
+        this.OffSPickY = 0;
+
         if(this.isGrounded == false){
             this.SpritelockStart = 4;
             this.SpritelockLength = 1;
@@ -264,8 +274,14 @@ export default class player{
             this.SpritelockStart = 0;
             this.SpritelockLength = 0;
             if(this.Duck){
-                this.SpritelockStart = 5;
-                this.SpritelockLength = 0;
+                if(this.PickUpHoldTime <= 0){
+                    this.SpritelockStart = 5;
+                    this.SpritelockLength = 0;
+                }if(this.PickUpHoldTime > 0){
+                    this.SpritelockStart = 5;
+                    this.SpritelockLength = 2;
+                }
+                this.OffSPickY = 2;
                 if(!this.JustDuck){
                     PlaySound("Duck", 0.5, 1 + (Math.random() / 2));this.JustDuck = true;}
             }
@@ -359,7 +375,30 @@ export default class player{
         else{
             this.JumpPressed = false;}
 
-        
+        //PickUp
+        if(this.controller.b.pressed == true){
+            if(this.PickUpHoldTime < 1)
+                this.PickUpHoldTime += DeltaTime;
+            if(this.PickUpHoldTime >= 1 || this.PickUpOBJ != null){
+                if(!this.PickUpPress){
+                    this.PickUp();
+                    this.PickUpPress = true;
+                }
+            }
+        }
+        if(!this.controller.b.pressed){
+            this.PickUpHoldTime = 0;
+            if(this.PickUpPress)
+                this.PickUpPress = false;
+        }
+
+        if(this.PickUpOBJ != null){
+            this.PickUpOBJ.position.x = Math.round(this.position.x + (this.velocity.x * DeltaTime));
+            this.PickUpOBJ.position.y = Math.round(this.position.y - (this.width / 2) - (this.PickUpOBJ.height / 2) +(this.velocity.y * DeltaTime))+ this.OffSPickY;
+        }
+
+
+        //Ducking
         this.Duck = (this.controller.y.Axis <= -0.5);
     
         if(!this.Duck)
@@ -379,6 +418,27 @@ export default class player{
         MoveCamTarget(Math.round((this.position.x - 32) + Math.floor(this.camOffX)), clamp(Math.round((this.position.y - 32) + Math.floor(this.camOffY)), -64 - (canvas.height / 2),- (canvas.height / 2)));
     }
     PickUp(){
+        console.log("pickup");
+        if(this.PickUpOBJ == null && (Math.round(this.velocity.x / 2) == 0) && this.isGrounded && this.Duck){
+            for (let index = 0; index < window.Players.length; index++) {
+                const Current = window.Players[index];
+                if(Current.ID == "Pickup"){
+                    this.PickUpOBJ = window.Players[index];
+                    this.PickUpOBJ.Throw = false;
+                    this.PickUpOBJ.velocity.x = 0;
+                    this.PickUpOBJ.velocity.y = 0;
+                    PlaySound("PickUp1", 1, 1);
+                    this.PickUpHoldTime = 0;
+                    console.log(this.PickUpOBJ);
+                }
+            }
+        }else if(this.PickUpOBJ != null){
+            PlaySound("Throw1", 1, 1);
+            this.PickUpOBJ.velocity.x = (50 * this.Direction) + this.velocity.x;
+            this.PickUpOBJ.Throw = true;
+            this.PickUpOBJ = null;
+        }
+        //this.PickUpOBJ
     }
     Damage(amount, x, y){
         if(this.timebtwHits <= 0){

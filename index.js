@@ -4,6 +4,7 @@ import MainMenu from "./Menu.js";
 import { gameMastUpdateFunc, gameMastDrawFunc, gameMastRestartFunc } from "./GameMaster.js";
 import BasicBox from "./BaseScripts/InteractObjects/BasicBox.js";
 import OptionsMenu from "./Options.js";
+import PickUpOBJ from "./BaseScripts/FloorVeg.js";
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
 
@@ -339,6 +340,13 @@ export function LoadLevel(LevelName){
                                     Pl.angle = parseFloat(CurrentObjectPriorityList[3]);
                                     Pl.CharacterSkin = CharacterSpawnSet;
                                     window.Players.push(Pl);
+                                break;
+                                case "Turnip":
+                                    var Pic = new PickUpOBJ();
+                                    Pic.position.x = parseFloat(CurrentObjectPriorityList[1]);
+                                    Pic.position.y = parseFloat(CurrentObjectPriorityList[2]);
+                                    //Pic.angle = parseFloat(CurrentObjectPriorityList[3]);
+                                    window.Players.push(Pic);
                                 break;
                                 case "MainMenu":
                                     var Agnt = new MainMenu();
@@ -807,7 +815,10 @@ function Update(){
                 MusicTrack.play();
 
             for (var i = 0; i < window.Players.length; i++) {
-                if(window.Players[i].position.x < cameraIntX + 160 && window.Players[i].position.x > cameraIntX)
+                var CheckXWidth = 0;
+                if(window.Players[i].width != null)
+                    CheckXWidth = window.Players[i].width;
+                if(window.Players[i].position.x < cameraIntX + 160 + CheckXWidth / 2 && window.Players[i].position.x > cameraIntX - CheckXWidth / 2)
                     window.Players[i].Update();
                 else if(window.Players[i].CanDoLoad == false)
                     window.Players[i].Update();
