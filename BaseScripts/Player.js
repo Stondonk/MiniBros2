@@ -421,20 +421,19 @@ export default class player{
                 for (let index = 0; index < window.Players.length; index++) {
                     const Current = window.Players[index];
                     if(Current.ID == "Pickup"){
+                        if(this.PickUpHoldTime < 1){
+                            //AtemptPickUp
+                            if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.position.x + (this.width / 2), this.position.y + (this.height / 2), Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)) == true){
+                                this.PickUpHoldTime += DeltaTime;}
+                        }
                         if(this.PickUpHoldTime >= 1){
                                 this.PickUpOBJ = window.Players[index];
                                 this.PickUpOBJ.Throw = false;
+                                this.PickUpOBJ.HoldSprite = true;
                                 this.PickUpOBJ.velocity.x = 0;
                                 this.PickUpOBJ.velocity.y = 0;
                                 PlaySound("PickUp1", 1, 1);
                                 console.log(this.PickUpOBJ);
-                                this.PickUpHoldTime = 0;
-                        }
-                        else{
-                            //AtemptPickUp
-                            if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.position.x + (this.width / 2), this.position.y + (this.height / 2), Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)) == true){
-                                this.PickUpHoldTime += DeltaTime;}
-                            else
                                 this.PickUpHoldTime = 0;
                         }
                     }
@@ -445,6 +444,8 @@ export default class player{
             this.PickUpOBJ.velocity.x = (50 * this.Direction) + this.velocity.x;
             this.PickUpOBJ.Throw = true;
             this.PickUpOBJ = null;
+        }else{
+            this.PickUpHoldTime = 0;
         }
         //this.PickUpOBJ
     }

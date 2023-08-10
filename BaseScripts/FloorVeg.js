@@ -23,6 +23,9 @@ export default class PickUpOBJ{
         this.sprite = EntityImage;
         this.spriteOffsetX = 0;
         this.spriteOffsetY = 11;
+        this.SpriteTweakX = 0;
+        this.SpriteTweakY = 0;
+        this.HoldSprite = false;
         this.SpriteWidth = 8;
         this.SpriteHeight = 8;
         this.SpriteScaleX = 1;
@@ -39,7 +42,7 @@ export default class PickUpOBJ{
     }
     Draw(){
         //ctx.fillRect((Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX)),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY)), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY);
-        drawImage(ctx,this.sprite,this.spriteOffsetX * this.SpriteWidth,this.spriteOffsetY * this.SpriteHeight, this.SpriteWidth, this.SpriteHeight, (Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX)),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY) + this.SpriteHeightOffset), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY,this.angle);
+        drawImage(ctx,this.sprite,this.spriteOffsetX * this.SpriteWidth,this.spriteOffsetY * this.SpriteHeight, this.SpriteWidth, this.SpriteHeight, (Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX) + this.SpriteTweakX),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY) + this.SpriteHeightOffset + this.SpriteTweakY), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY,this.angle);
     }
     CollisionDect(){
         
@@ -48,6 +51,11 @@ export default class PickUpOBJ{
         //this.velocity.x = lerp(this.velocity.x, 0, 2 * DeltaTime);
         if(this.Throw)
             this.velocity.y += this.Gravity * DeltaTime;
+
+        if(this.HoldSprite){
+            this.spriteOffsetY = 11;this.SpriteTweakY = 0;}
+        else{
+            this.spriteOffsetY = 10;this.SpriteTweakY = -4;}
 
         this.CollisionDect();
         this.position.x += this.velocity.x * DeltaTime;
