@@ -182,7 +182,7 @@ export default class OptionsMenu{
             //ctx.fillRect(this.Cursor.x - cameraIntX, this.Cursor.y - cameraIntY, 2, 2);
             drawImage(ctx, EntityImage, this.FakeEntity.Frame * 8,this.FakeEntity.MovementMode * 16 + (8*this.FakeEntity.LayerOffest),8,8,Math.round(this.FakeEntity.position.x -4 - cameraIntX) , Math.round(this.FakeEntity.position.y - 4 - cameraIntY), 8,8,0);
 
-            if(this.FakeEntity.FrameTick >= 0.25){
+            if(this.FakeEntity.FrameTick >= 0.125){
                 this.FakeEntity.Frame++;
                 if(this.FakeEntity.Frame >= this.FakeEntity.FramePoint + this.FakeEntity.FrameLength)
                     this.FakeEntity.Frame = 0;
