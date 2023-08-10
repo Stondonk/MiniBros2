@@ -2,7 +2,7 @@
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
 import RagDoll from "./RagDoll.js";
-import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, MouseX, MouseY, MasterArrayLevelSize, PlayerImage, lerpAngle, lineBlock, VeclineLine, magnitude, EntityImage, PlaySound} from "../index.js";
+import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, MouseX, MouseY, MasterArrayLevelSize, PlayerImage, lerpAngle, lineBlock, VeclineLine, magnitude, EntityImage, PlaySound, boxbox} from "../index.js";
 
 export default class player{
     constructor(){
@@ -278,6 +278,7 @@ export default class player{
                     this.SpritelockStart = 5;
                     this.SpritelockLength = 0;
                 }if(this.PickUpHoldTime > 0){
+                    //whenPickingSomethingUp
                     this.SpritelockStart = 5;
                     this.SpritelockLength = 2;
                 }
@@ -377,14 +378,11 @@ export default class player{
 
         //PickUp
         if(this.controller.b.pressed == true){
-            if(this.PickUpHoldTime < 1)
-                this.PickUpHoldTime += DeltaTime;
-            if(this.PickUpHoldTime >= 1 || this.PickUpOBJ != null){
-                if(!this.PickUpPress){
                     this.PickUp();
+                if(!this.PickUpPress){
                     this.PickUpPress = true;
                 }
-            }
+            
         }
         if(!this.controller.b.pressed){
             this.PickUpHoldTime = 0;
@@ -420,19 +418,29 @@ export default class player{
     PickUp(){
         console.log("pickup");
         if(this.PickUpOBJ == null && (Math.round(this.velocity.x / 2) == 0) && this.isGrounded && this.Duck){
-            for (let index = 0; index < window.Players.length; index++) {
-                const Current = window.Players[index];
-                if(Current.ID == "Pickup"){
-                    this.PickUpOBJ = window.Players[index];
-                    this.PickUpOBJ.Throw = false;
-                    this.PickUpOBJ.velocity.x = 0;
-                    this.PickUpOBJ.velocity.y = 0;
-                    PlaySound("PickUp1", 1, 1);
-                    this.PickUpHoldTime = 0;
-                    console.log(this.PickUpOBJ);
+                for (let index = 0; index < window.Players.length; index++) {
+                    const Current = window.Players[index];
+                    if(Current.ID == "Pickup"){
+                        if(this.PickUpHoldTime >= 1){
+                                this.PickUpOBJ = window.Players[index];
+                                this.PickUpOBJ.Throw = false;
+                                this.PickUpOBJ.velocity.x = 0;
+                                this.PickUpOBJ.velocity.y = 0;
+                                PlaySound("PickUp1", 1, 1);
+                                console.log(this.PickUpOBJ);
+                                this.PickUpHoldTime = 0;
+                        }
+                        else{
+                            //AtemptPickUp
+                            if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.position.x + (this.width / 2), this.position.y + (this.height / 2), Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)) == true){
+                                this.PickUpHoldTime += DeltaTime;}
+                            else
+                                this.PickUpHoldTime = 0;
+                        }
+                    }
                 }
-            }
-        }else if(this.PickUpOBJ != null){
+            
+        }else if(this.PickUpOBJ != null && !this.PickUpPress){
             PlaySound("Throw1", 1, 1);
             this.PickUpOBJ.velocity.x = (50 * this.Direction) + this.velocity.x;
             this.PickUpOBJ.Throw = true;
