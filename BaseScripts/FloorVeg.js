@@ -1,7 +1,7 @@
 
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
-import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, EntityImage} from "../index.js";
+import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, EntityImage, boxbox} from "../index.js";
 import player from "./Player.js";
 
 export default class PickUpOBJ{
@@ -141,8 +141,10 @@ export default class PickUpOBJ{
     }
     Update(){
         //this.velocity.x = lerp(this.velocity.x, 0, 2 * DeltaTime);
-        if(this.Throw)
+        if(this.Throw){
             this.velocity.y += this.Gravity * DeltaTime;
+            this.Attack();
+        }
 
         if(this.ChangePickUp){
             if(this.HoldSprite){
@@ -155,6 +157,18 @@ export default class PickUpOBJ{
             this.CollisionDect();
         this.position.x += this.velocity.x * DeltaTime;
         this.position.y += this.velocity.y * DeltaTime;
+    }
+    Attack(){
+        for (let index = 0; index < window.Players.length; index++) {
+            const Current = window.Players[index];
+            if(Current.ID == "Enemy"){
+                if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.position.x + (this.width / 2), this.position.y + (this.height / 2) + 2, Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)) == true){
+                    Current.Death();
+                    this.velocity.y = -10;
+                }
+            }
+            
+        }
     }
     Damage(){
 

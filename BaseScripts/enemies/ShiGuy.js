@@ -1,7 +1,7 @@
 
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
-import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, EntityImage, pointbox} from "../../index.js";
+import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, EntityImage, pointbox, PlaySound} from "../../index.js";
 import player from "../Player.js";
 import PickUpOBJ from "../FloorVeg.js";
 
@@ -165,13 +165,21 @@ export default class ShiGuy{
                 }
             }
             window.Players.push(newSpawnTr);
-            this.Death();
+            window.KillList.push(this);
         }else{
             this.velocity.x = lerp(this.velocity.x, this.Speed * this.Direction, 8 * DeltaTime);
             for (let index = 0; index < Math.floor((LevelX.length) / MasterArrayLevelSize); index++) {
                 const indev = index * MasterArrayLevelSize;
                 if(pointbox(this.position.x + (this.Direction * 5), this.position.y, LevelX[indev], LevelX[indev+1], LevelX[indev] + LevelX[indev+2],LevelX[indev + 1] + LevelX[indev + 3])){
                     this.Direction = -this.Direction;
+                }
+            }
+            for (let index = 0; index < window.Players.length; index++) {
+                const current = window.Players[index];
+                if(current.ID == "Enemy"){
+                    if(pointbox(this.position.x + (this.Direction * 5), this.position.y, current.position.x - (current.width / 2), current.position.y - (current.height / 2), current.position.x + (current.width / 2), current.position.y + (current.height / 2))){
+                        this.Direction = -this.Direction;
+                    }
                 }
             }
         }
@@ -185,6 +193,7 @@ export default class ShiGuy{
 
     }
     Death(){
+        PlaySound("Throw1", 0.8, 1);
         window.KillList.push(this);
     }
 
