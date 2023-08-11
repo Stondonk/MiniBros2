@@ -14,6 +14,8 @@ export default class player{
         this.velocity = {
             x : 10,
             y : 0,
+            HiddenX : 0,
+            HiddenY : 0,
         }
         this.weapon = {
             sx : 8,
@@ -160,7 +162,7 @@ export default class player{
 
 
             if(LevelX[indev + 5] == 0){
-                if (CornerX + this.velocity.x * DeltaTime >= LevelX[indev] - this.width && CornerX + this.velocity.x * DeltaTime <= LevelX[indev] + LevelX[indev + 2]  && CornerY + this.height >= LevelX[indev+1] && CornerY <= LevelX[indev+1] + LevelX[indev + 3]) {
+                if (CornerX + (this.velocity.x + this.velocity.HiddenX) * DeltaTime >= LevelX[indev] - this.width && CornerX + (this.velocity.x + this.velocity.HiddenX)* DeltaTime <= LevelX[indev] + LevelX[indev + 2]  && CornerY + this.height >= LevelX[indev+1] && CornerY <= LevelX[indev+1] + LevelX[indev + 3]) {
                     var Cxp = this.position.x;
                     if(hasHitX){
                         if(Math.pow(LevelX[indev]- this.position.x, 2) < Math.pow(LevelX[indev] + (LevelX[indev + 2]) - this.position.x, 2)){
@@ -182,7 +184,7 @@ export default class player{
                     }
                 }
     
-                if ((CornerY + this.velocity.y * DeltaTime >= LevelX[indev + 1] - this.height && CornerY + this.velocity.y * DeltaTime <= LevelX[indev + 1] + LevelX[indev + 3] && CornerX + this.width >= LevelX[indev] && CornerX <= LevelX[indev] + LevelX[indev + 2]) || (CornerY >= LevelX[indev + 1] - this.height && CornerY <= LevelX[indev + 1] + LevelX[indev + 3] && CornerX + this.width >= LevelX[indev] && CornerX <= LevelX[indev] + LevelX[indev + 2])) {
+                if ((CornerY + (this.velocity.y + this.velocity.HiddenY) * DeltaTime >= LevelX[indev + 1] - this.height && CornerY + (this.velocity.y + this.velocity.HiddenY) * DeltaTime <= LevelX[indev + 1] + LevelX[indev + 3] && CornerX + this.width >= LevelX[indev] && CornerX <= LevelX[indev] + LevelX[indev + 2]) || (CornerY >= LevelX[indev + 1] - this.height && CornerY <= LevelX[indev + 1] + LevelX[indev + 3] && CornerX + this.width >= LevelX[indev] && CornerX <= LevelX[indev] + LevelX[indev + 2])) {
                     var Cyp = this.position.y;
                     if(hasHitY){
                         if(Math.pow(LevelX[indev + 1]- this.position.y, 2) < Math.pow(LevelX[indev+ 1] + (LevelX[indev + 3]) - this.position.y, 2)){
@@ -206,7 +208,7 @@ export default class player{
 
                 //ground
             
-                if (CornerY + (this.velocity.y * DeltaTime) + 1 >= LevelX[indev + 1] - this.height && CornerY + (this.velocity.y * DeltaTime) <= LevelX[indev + 1] + LevelX[indev + 3] - this.height && CornerX + this.width >= LevelX[indev] && CornerX <= LevelX[indev] + (LevelX[indev + 2])){
+                if (CornerY + ((this.velocity.y + this.velocity.HiddenY) * DeltaTime) + 1 >= LevelX[indev + 1] - this.height && CornerY + ((this.velocity.y + this.velocity.HiddenY) * DeltaTime) <= LevelX[indev + 1] + LevelX[indev + 3] - this.height && CornerX + this.width >= LevelX[indev] && CornerX <= LevelX[indev] + (LevelX[indev + 2])){
                     this.isGrounded = true;
                 }
             }
@@ -227,12 +229,20 @@ export default class player{
         {
             this.position.x = (CurrentOneX);
             this.velocity.x = 0;
+            this.velocity.HiddenX = 0;
             this.fHorizontal = this.velocity.x;
         }
         if(hasHitY)
         {
             this.position.y = (CurrentOneY);
             this.velocity.y = 0;
+            this.velocity.HiddenY = 0;
+        }
+        if(hasHitX && hasHitY){
+            var offit = 0.1;
+            if(this.position.y < CurrentOneY)
+                offit = -0.1;
+            this.position.y -= offit;
         }
 
         //Object dect
@@ -248,6 +258,40 @@ export default class player{
         }
         */
         
+    }
+    EntityCollision(){
+        const HalfWidth = this.width / 2, HalfHeight = this.height / 2;
+        const CornerX = this.position.x - HalfWidth, CornerY = this.position.y - HalfHeight;
+        var CurrentOneX = this.position.x;
+        var CurrentOneY = this.position.y;
+        var CurrentVx = 0, CurrentVy = 0;
+        var hasHitX = false, hasHitY = false;
+        for (let index = 0; index < window.Players.length; index++) {
+            const Current = window.Players[index];
+            if(Current.RideAble == true){
+                var CurrentX = Current.position.x - Current.width / 2, CurrentY = Current.position.y - Current.height / 2;
+                
+                if (CornerY + (this.velocity.y * DeltaTime) + 1 >= CurrentY - this.height && CornerY + (this.velocity.y * DeltaTime) <= CurrentY + Current.height - this.height && CornerX + this.width >= CurrentX && CornerX <= CurrentX + Current.width && this.velocity.y >= 0){
+                    if(hasHitY){
+                        if(Math.pow(CurrentY - this.position.y, 2) < Math.pow(CurrentOneY - this.position.y, 2))
+                            {CurrentOneY = CurrentY - 0.1 - (this.height / 2); hasHitY = true; CurrentVx = Current.velocity.x;}
+                    }else{
+                        CurrentOneY = CurrentY - 0.1 - (this.height / 2);
+                        CurrentVx = Current.velocity.x;
+                        hasHitY = true;
+                    }
+                    this.isGrounded = true;
+                }
+                
+            }
+            
+        }
+        if(hasHitY)
+        {
+            this.position.y = (CurrentOneY);
+            this.velocity.HiddenX = CurrentVx;
+            this.velocity.y = CurrentVy;
+        }
     }
     Animation(){
         //Bad way of doing it I know but what you gonna do about huh, yeah joe I know your looking hear get out shoo
@@ -393,6 +437,9 @@ export default class player{
         if(this.PickUpOBJ != null){
             this.PickUpOBJ.position.x = Math.round(this.position.x + (this.velocity.x * DeltaTime));
             this.PickUpOBJ.position.y = Math.round(this.position.y - (this.width / 2) - (this.PickUpOBJ.height / 2) +(this.velocity.y * DeltaTime))+ this.OffSPickY;
+            this.PickUpOBJ.velocity.x = 0;
+            this.PickUpOBJ.velocity.y = 0;
+            this.PickUpOBJ.Direction = this.Direction;
         }
 
 
@@ -403,10 +450,13 @@ export default class player{
             this.JustDuck = false;
 
         this.isGrounded = false;
+        this.velocity.HiddenX = 0;
+        this.velocity.HiddenY = 0;
+        this.EntityCollision();
         this.CollisionDect();
         
-        this.position.x += this.velocity.x * DeltaTime;
-        this.position.y += this.velocity.y * DeltaTime;
+        this.position.x += (this.velocity.x + this.velocity.HiddenX) * DeltaTime;
+        this.position.y += (this.velocity.y + this.velocity.HiddenY) * DeltaTime;
         
         //camera
         //this.Direction * 16
@@ -420,10 +470,10 @@ export default class player{
         if(this.PickUpOBJ == null && (Math.round(this.velocity.x / 2) == 0) && this.isGrounded && this.Duck){
                 for (let index = 0; index < window.Players.length; index++) {
                     const Current = window.Players[index];
-                    if(Current.ID == "Pickup"){
+                    if(Current.CanBePickedUp == true){
                         if(this.PickUpHoldTime < 1){
                             //AtemptPickUp
-                            if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.position.x + (this.width / 2), this.position.y + (this.height / 2), Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)) == true){
+                            if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.position.x + (this.width / 2), this.position.y + (this.height / 2) + 2, Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)) == true){
                                 this.PickUpHoldTime += DeltaTime;}
                         }
                         if(this.PickUpHoldTime >= 1){

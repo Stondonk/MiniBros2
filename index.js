@@ -5,6 +5,7 @@ import { gameMastUpdateFunc, gameMastDrawFunc, gameMastRestartFunc } from "./Gam
 import BasicBox from "./BaseScripts/InteractObjects/BasicBox.js";
 import OptionsMenu from "./Options.js";
 import PickUpOBJ from "./BaseScripts/FloorVeg.js";
+import ShiGuy from "./BaseScripts/enemies/ShiGuy.js";
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
 
@@ -341,6 +342,13 @@ export function LoadLevel(LevelName){
                                     Pl.CharacterSkin = CharacterSpawnSet;
                                     window.Players.push(Pl);
                                 break;
+                                case "ShiGuy":
+                                    var Pic = new ShiGuy();
+                                    Pic.position.x = parseFloat(CurrentObjectPriorityList[1]);
+                                    Pic.position.y = parseFloat(CurrentObjectPriorityList[2]);
+                                    //Pic.angle = parseFloat(CurrentObjectPriorityList[3]);
+                                    window.Players.push(Pic);
+                                break;
                                 case "Turnip":
                                     var Pic = new PickUpOBJ();
                                     Pic.position.x = parseFloat(CurrentObjectPriorityList[1]);
@@ -673,6 +681,11 @@ export function lineBlock(lx1,ly1,lx2,ly2,bx,by,bw,bh){
 }
 export function boxbox(x1,y1,x2,y2,x3,y3,x4,y4){
     if((x1 <= x4 && x2 >= x3 && y1 <= y4 && y2 >= y3)){
+        return true;}
+    return false;
+}
+export function pointbox(x1,y1,x2,y2,x3,y3){
+    if((x1 >= x2 && x1 <= x3 && y1 >= y2 && y1 <= y3)){
         return true;}
     return false;
 }

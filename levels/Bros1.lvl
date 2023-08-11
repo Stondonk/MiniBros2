@@ -4,6 +4,7 @@
 {Turnip,0,0,0,}
 {Turnip,-8,0,0,}
 {Turnip,8,0,0,}
+{ShiGuy, -8, -16,}
 {GameUI,}
 {BG,CloudsBg1.png,}
 {Music,Smb2Overworld,}

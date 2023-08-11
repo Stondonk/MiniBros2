@@ -1,10 +1,11 @@
 
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
-import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, EntityImage} from "../index.js";
-import player from "./Player.js";
+import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, EntityImage} from "../../index.js";
+import player from "../Player.js";
+import PickUpOBJ from "../FloorVeg.js";
 
-export default class PickUpOBJ{
+export default class FlyGuy{
     constructor(){
         this.position = {
             x : 20,
@@ -16,14 +17,15 @@ export default class PickUpOBJ{
             y : 0,
         }
         this.SelfDraw = false;
-        this.ID = "Pickup";
+        this.ID = "Enemy";
         this.CanBePickedUp = true;
         this.angle = 0;
         this.width = 8
         this.height = 8;
         this.sprite = EntityImage;
         this.spriteOffsetX = 0;
-        this.spriteOffsetY = 11;
+        this.spriteOffsetY = 4;
+        this.spriteDirOff = 0;
         this.SpriteTweakX = 0;
         this.SpriteTweakY = 0;
         this.HoldSprite = false;
@@ -32,9 +34,10 @@ export default class PickUpOBJ{
         this.SpriteScaleX = 1;
         this.SpriteScaleY = 1;
         this.SpriteHeightOffset = 0;
-        this.HasCollision = false;
+        this.HasCollision = true;
         this.Throw = false;
-        this.ChangePickUp = true;
+
+        this.Direction = 1;
 
         this.Gravity = 120;
     }
@@ -45,7 +48,7 @@ export default class PickUpOBJ{
     }
     Draw(){
         //ctx.fillRect((Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX)),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY)), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY);
-        drawImage(ctx,this.sprite,this.spriteOffsetX * this.SpriteWidth,this.spriteOffsetY * this.SpriteHeight, this.SpriteWidth, this.SpriteHeight, (Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX) + this.SpriteTweakX),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY) + this.SpriteHeightOffset + this.SpriteTweakY), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY,this.angle);
+        drawImage(ctx,this.sprite,this.spriteOffsetX * this.SpriteWidth,(this.spriteOffsetY + this.spriteDirOff) * this.SpriteHeight, this.SpriteWidth, this.SpriteHeight, (Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX) + this.SpriteTweakX),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY) + this.SpriteHeightOffset + this.SpriteTweakY), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY,this.angle);
     }
     CollisionDect(){
         const HalfWidth = this.width / 2, HalfHeight = this.height / 2;
@@ -141,15 +144,26 @@ export default class PickUpOBJ{
     }
     Update(){
         //this.velocity.x = lerp(this.velocity.x, 0, 2 * DeltaTime);
-        if(this.Throw)
-            this.velocity.y += this.Gravity * DeltaTime;
-
-        if(this.ChangePickUp){
-            if(this.HoldSprite){
-                this.spriteOffsetY = 11;this.SpriteTweakY = 0;}
-            else{
-                this.spriteOffsetY = 10;this.SpriteTweakY = -4;}
-        }
+        this.velocity.y += this.Gravity * DeltaTime;
+        this.spriteDirOff = Math.round((-this.Direction + 1) / 2);
+        if(this.HoldSprite){
+            var newSpawnTr = new PickUpOBJ();
+            newSpawnTr.position.x = this.position.x;
+            newSpawnTr.position.y = this.position.y;
+            newSpawnTr.velocity.x = this.velocity.x;
+            newSpawnTr.velocity.y = this.velocity.y;
+            newSpawnTr.spriteOffsetX = this.spriteOffsetX;
+            newSpawnTr.spriteOffsetY = this.spriteOffsetY + this.spriteDirOff;
+            newSpawnTr.ChangePickUp = false;
+            newSpawnTr.Throw = true;
+            for (let index = 0; index < window.Players.length; index++) {
+                if(window.Players[index].ID == "Player"){
+                    if(window.Players[index].PickUpOBJ == this)
+                    window.Players[index].PickUpOBJ = newSpawnTr;
+                }
+            }
+            window.Players.push(newSpawnTr);
+            this.Death();}
 
         if(this.HasCollision)
             this.CollisionDect();
