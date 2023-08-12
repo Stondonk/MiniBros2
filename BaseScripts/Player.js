@@ -129,6 +129,11 @@ export default class player{
         this.CharacterSkin = 0;
         this.CharacterSounds = ["","PickUp1","Throw1","HitSo","deathSM","Luigi","LuigiPickUp","LuigiThrow","LuigiHit","LuigiDead"];
         this.WalkTiming = 0.2;
+
+        this.HasHitForX = false;
+        this.HasHitForY = false;
+        this.CollisionXPoint = 0;
+        this.CollisionYPoint = 0;
     }
     #image(fileName) {
         const img = new Image();
@@ -233,16 +238,22 @@ export default class player{
         }
         if(hasHitX)
         {
-            this.position.x = (CurrentOneX);
+            //this.position.x = (CurrentOneX);
             this.velocity.x = 0;
             this.velocity.HiddenX = 0;
+
+            this.HasHitForX = true;
+            this.CollisionXPoint = (CurrentOneX);
             this.fHorizontal = this.velocity.x;
         }
         if(hasHitY)
         {
-            this.position.y = (CurrentOneY);
+            //this.position.y = (CurrentOneY);
             this.velocity.y = 0;
             this.velocity.HiddenY = 0;
+
+            this.HasHitForY = true;
+            this.CollisionYPoint = (CurrentOneY);
         }
         if(hasHitX && hasHitY){
             var offit = 0.1;
@@ -295,11 +306,12 @@ export default class player{
         }
         if(hasHitY)
         {
-            this.position.y = (CurrentOneY);
+            this.CollisionYPoint = (CurrentOneY);
+            this.HasHitForY = true;
             this.velocity.HiddenX = CurrentVx;
             if(CurrentVy < 0)
                 this.velocity.HiddenY = CurrentVy;
-            
+
                 this.velocity.y = 0;
         }
     }
@@ -467,8 +479,17 @@ export default class player{
         this.isGrounded = false;
         this.velocity.HiddenX = 0;
         this.velocity.HiddenY = 0;
+
+        this.HasHitForX = false;
+        this.HasHitForY = false;
+
         this.EntityCollision();
         this.CollisionDect();
+        
+        if(this.HasHitForX)
+            this.position.x = this.CollisionXPoint;
+        if(this.HasHitForY)
+            this.position.y = this.CollisionYPoint;
         
         this.position.x += (this.velocity.x + this.velocity.HiddenX) * DeltaTime;
         this.position.y += (this.velocity.y + this.velocity.HiddenY) * DeltaTime;
