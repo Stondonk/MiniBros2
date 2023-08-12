@@ -468,13 +468,14 @@ export default class player{
     PickUp(){
         console.log("pickup");
         if(this.PickUpOBJ == null && (Math.round(this.velocity.x / 2) == 0) && this.isGrounded && this.Duck){
+            var IncroTime = false;
                 for (let index = 0; index < window.Players.length; index++) {
                     const Current = window.Players[index];
                     if(Current.CanBePickedUp == true){
                         if(this.PickUpHoldTime < 1){
                             //AtemptPickUp
-                            if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.position.x + (this.width / 2), this.position.y + (this.height / 2) + 2, Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)) == true){
-                                this.PickUpHoldTime += DeltaTime;}
+                            if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.position.x + (this.width / 2), this.position.y + (this.height / 2) + 2, Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)) == true && IncroTime == false){
+                                this.PickUpHoldTime += DeltaTime; IncroTime = true;}
                         }
                         if(this.PickUpHoldTime >= 1){
                                 this.PickUpOBJ = window.Players[index];
@@ -485,6 +486,7 @@ export default class player{
                                 PlaySound("PickUp1", 1, 1);
                                 console.log(this.PickUpOBJ);
                                 this.PickUpHoldTime = 0;
+                                index = window.Players.length;
                         }
                     }
                 }
@@ -504,7 +506,7 @@ export default class player{
             this.Health -= amount;
             //if(this.Health <= 0)
                 //this.Death();
-            this.fHorizontal = clamp(this.position.x - x, -1, 1) * 200;
+            this.fHorizontal = clamp(this.position.x - x, -1, 1) * 20;
             this.timebtwHits = 1;
         }
     }

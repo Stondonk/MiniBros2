@@ -1,7 +1,7 @@
 
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
-import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, EntityImage, pointbox, PlaySound} from "../../index.js";
+import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, EntityImage, pointbox, PlaySound, boxbox} from "../../index.js";
 import player from "../Player.js";
 import PickUpOBJ from "../FloorVeg.js";
 
@@ -189,8 +189,17 @@ export default class ShiGuy{
         this.position.x += this.velocity.x * DeltaTime;
         this.position.y += this.velocity.y * DeltaTime;
     }
+    Attack(){
+        for (let index = 0; index < window.Players.length; index++) {
+            const Current = window.Players[index];
+            if(Current.ID == "Player"){
+                if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 4), this.position.x + (this.width / 2), this.position.y + (this.height / 4), Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)))
+                    Current.Damage();
+            }
+        }
+    }
     Damage(){
-
+        window.KillList.push(this);
     }
     Death(){
         PlaySound("Throw1", 0.8, 1);
