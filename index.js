@@ -29,7 +29,7 @@ var TileTextureImage = image("MinibrosTileSet.png");
 var PauseTimeSinc = 0;
 //transition Stuff
 var CharacterSpawnSet = 0;
-var TransitionVal = 0, ScreenTime = 1, OpenTransition = true, TransitionForTime = 1, TimeWhenStartTransition = 0, LevelToLoad = "";
+var TransitionVal = 0, ScreenTime = 1, OpenTransition = true, TransitionForTime = 1, TimeWhenStartTransition = 0, LevelToLoad = "", CurrentLevel = "";
 var MusicTrack = document.getElementById('MusicTrack'), MusicTrackTitle = "";
 var SFXTrack = document.getElementById('SFXTrack');
 window.SFXVolume = 1; 
@@ -440,16 +440,16 @@ export function LoadLevel(LevelName){
                 //alert(allText);
             }
             gameMastRestartFunc();
+            CurrentLevel = LevelName;
         }
     }
     rawFile.send(null);
     
 }
 
-export function LoadLevelTransition(Level){
+export function LoadLevelTransition(Level, Time = 1){
     if(LevelToLoad == ""){
-        OpenTransition = false;
-        TimeWhenStartTransition = 1;
+        TimeWhenStartTransition = Time;
         LevelToLoad = Level;
     }
 }
@@ -830,8 +830,8 @@ function Update(){
             for (var i = 0; i < window.Players.length; i++) {
                 var CheckXWidth = 0;
                 if(window.Players[i].width != null)
-                    CheckXWidth = window.Players[i].width;
-                if(window.Players[i].position.x < cameraIntX + 160 + CheckXWidth / 2 && window.Players[i].position.x > cameraIntX - CheckXWidth / 2)
+                    CheckXWidth = window.Players[i].width / 2;
+                if(window.Players[i].position.x < cameraIntX + 64 + CheckXWidth && window.Players[i].position.x > cameraIntX - CheckXWidth)
                     window.Players[i].Update();
                 else if(window.Players[i].CanDoLoad == false)
                     window.Players[i].Update();
@@ -906,6 +906,9 @@ function Update(){
     if(MusicTrack.currentTime >= MusicTrack.duration)
         PlayMusic(MusicTrackTitle);
 
+    if(TimeWhenStartTransition <= TimeWhenStartTransition && TimeWhenStartTransition > 0)
+        OpenTransition = false;
+
     if(TimeWhenStartTransition > 0){
         TimeWhenStartTransition -= DeltaTime;
     }else if(TimeWhenStartTransition <= 0 && LevelToLoad != "")
@@ -926,4 +929,4 @@ function Update(){
 
 }
 
-export {DeltaTime, cameraX, cameraIntX, cameraY, cameraIntY, MouseX, MouseY, PlayerImage, MenuUIImage, TitleImage, TextImg, MissItems, InBrows, EntityImage, MusicTrackTitle, MusicTrack, SFXTrack};
+export {DeltaTime, cameraX, cameraIntX, cameraY, cameraIntY, MouseX, MouseY, PlayerImage, MenuUIImage, TitleImage, TextImg, MissItems, InBrows, EntityImage, MusicTrackTitle, MusicTrack, SFXTrack, CurrentLevel};

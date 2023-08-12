@@ -2,7 +2,7 @@
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
 import RagDoll from "./RagDoll.js";
-import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, MouseX, MouseY, MasterArrayLevelSize, PlayerImage, lerpAngle, lineBlock, VeclineLine, magnitude, EntityImage, PlaySound, boxbox} from "../index.js";
+import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, MouseX, MouseY, MasterArrayLevelSize, PlayerImage, lerpAngle, lineBlock, VeclineLine, magnitude, EntityImage, PlaySound, boxbox, PlayMusic, MusicTrack, LoadLevelTransition, CurrentLevel} from "../index.js";
 
 export default class player{
     constructor(){
@@ -528,14 +528,20 @@ export default class player{
         rt.position.y = this.position.y;
         rt.sprite = this.sprite;
         rt.spriteOffsetX = 0;
-        rt.spriteOffsetY = 0;
+        rt.spriteOffsetY = this.CharacterSkin * this.SpriteHeight;
         rt.SpriteWidth = 8;
         rt.SpriteHeight = 8;
         rt.velocity.y = this.velocity.y - 100;
-        rt.velocity.x = this.velocity.x + this.Direction * 100;
+        //rt.velocity.x = this.Direction * 100;
         rt.width = this.width;
         rt.height = this.height;
         window.Players.push(rt);
+        //CutMusic
+        MusicTrack.currentTime = 0;
+        MusicTrack.pause();
+        PlaySound("deathSM",1,1);
+
+        LoadLevelTransition(CurrentLevel, 2);
 
         window.KillList.push(this);
     }

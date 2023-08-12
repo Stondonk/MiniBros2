@@ -52,7 +52,7 @@ export default class MainMenu{
                         //Menu interactions
                         switch(this.pointAxisPoint){
                             case 0:
-                                LoadLevelTransition("Options.lvl");
+                                LoadLevelTransition("Options.lvl", 1);
                             break;
                         }
                         this.HasAPressed = true;

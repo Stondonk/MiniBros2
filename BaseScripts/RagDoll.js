@@ -40,7 +40,11 @@ export default class RagDoll{
         this.SpriteScaleX = 1;
         this.SpriteScaleY = 1;
 
-        //this.sprite
+        this.SpritePos = 0;
+        this.SpritelockStart = 0;
+        this.SpritelockLength = 0;
+        this.AnimTick = 0;
+        this.AnimSpeed = 1;
 
         this.Collision = false;
     }
@@ -143,6 +147,25 @@ export default class RagDoll{
                 offit = -0.1;
             this.position.y -= offit;
         }
+    }
+    Animation(){
+        //Bad way of doing it I know but what you gonna do about huh, yeah joe I know your looking hear get out shoo
+        //flipSprite  
+        if(this.SpritelockLength > 0){
+            this.AnimTick += DeltaTime;
+            if(this.AnimTick >= 0.125 * (1 / this.AnimSpeed)){
+                this.SpritePos+=1; this.AnimTick = 0;}
+
+            if(this.SpritePos >= this.SpritelockStart + this.SpritelockLength)
+                this.SpritePos = this.SpritelockStart;
+            else if(this.SpritePos < this.SpritelockStart)
+                this.SpritePos = this.SpritelockStart;
+        }
+        else if(this.SpritelockLength == 0)
+            this.SpritePos = this.SpritelockStart;
+
+
+        this.spriteOffsetX = this.SpritePos;
     }
     Update(){
         this.velocity.x = lerp(this.velocity.x, 0, 2 * DeltaTime);

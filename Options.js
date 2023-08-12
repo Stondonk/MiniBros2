@@ -63,11 +63,11 @@ export default class OptionsMenu{
                     switch(this.SelectedButton){
                         case 0:
                             SetPlayer(0);
-                            LoadLevelTransition("Bros1.lvl");
+                            LoadLevelTransition("Bros1.lvl", 1);
                         break;
                         case 1:
                             SetPlayer(1);
-                            LoadLevelTransition("Bros1.lvl");
+                            LoadLevelTransition("Bros1.lvl", 1);
                         break;
                         case 2:
                             this.MenuScreen = 1;
