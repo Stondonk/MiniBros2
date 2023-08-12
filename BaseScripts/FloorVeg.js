@@ -165,6 +165,7 @@ export default class PickUpOBJ{
                 if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 2), this.position.x + (this.width / 2), this.position.y + (this.height / 2) + 2, Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)) == true){
                     Current.Damage(1,this.position.x,this.position.y);
                     this.velocity.y = -10;
+                    
                 }
             }
             

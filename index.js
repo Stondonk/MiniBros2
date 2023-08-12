@@ -349,6 +349,15 @@ export function LoadLevel(LevelName){
                                     Pic.Direction = parseFloat(CurrentObjectPriorityList[4]);
                                     window.Players.push(Pic);
                                 break;
+                                case "BuiGuy":
+                                    var Pic = new ShiGuy();
+                                    Pic.position.x = parseFloat(CurrentObjectPriorityList[1]);
+                                    Pic.position.y = parseFloat(CurrentObjectPriorityList[2]);
+                                    Pic.Direction = parseFloat(CurrentObjectPriorityList[4]);
+                                    Pic.Health = 2;
+                                    Pic.spriteOffsetY = 6;
+                                    window.Players.push(Pic);
+                                break;
                                 case "Turnip":
                                     var Pic = new PickUpOBJ();
                                     Pic.position.x = parseFloat(CurrentObjectPriorityList[1]);

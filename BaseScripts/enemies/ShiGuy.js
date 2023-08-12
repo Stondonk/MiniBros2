@@ -4,6 +4,7 @@ const ctx = canvas.getContext("2d");
 import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, EntityImage, pointbox, PlaySound, boxbox} from "../../index.js";
 import player from "../Player.js";
 import PickUpOBJ from "../FloorVeg.js";
+import RagDoll from "../RagDoll.js";
 
 export default class ShiGuy{
     constructor(){
@@ -18,6 +19,9 @@ export default class ShiGuy{
         }
         this.SelfDraw = false;
         this.ID = "Enemy";
+        this.Health = 1;
+        this.timebtwHits = 0;
+        this.timeForHits = 0.25;
         this.RideAble = true;
         this.CanBePickedUp = true;
         this.angle = 0;
@@ -50,7 +54,8 @@ export default class ShiGuy{
     }
     Draw(){
         //ctx.fillRect((Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX)),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY)), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY);
-        drawImage(ctx,this.sprite,this.spriteOffsetX * this.SpriteWidth,(this.spriteOffsetY + this.spriteDirOff) * this.SpriteHeight, this.SpriteWidth, this.SpriteHeight, (Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX) + this.SpriteTweakX),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY) + this.SpriteHeightOffset + this.SpriteTweakY), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY,this.angle);
+        if(Math.round(this.timebtwHits * 10)%2==0)
+            drawImage(ctx,this.sprite,this.spriteOffsetX * this.SpriteWidth,(this.spriteOffsetY + this.spriteDirOff) * this.SpriteHeight, this.SpriteWidth, this.SpriteHeight, (Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX) + this.SpriteTweakX),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY) + this.SpriteHeightOffset + this.SpriteTweakY), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY,this.angle);
     }
     CollisionDect(){
         const HalfWidth = this.width / 2, HalfHeight = this.height / 2;
@@ -188,6 +193,10 @@ export default class ShiGuy{
             }
         }
 
+        if(this.timebtwHits > 0){
+            this.timebtwHits -= DeltaTime;
+        }
+
         if(this.HasCollision)
             this.CollisionDect();
         this.position.x += this.velocity.x * DeltaTime;
@@ -202,10 +211,36 @@ export default class ShiGuy{
             }
         }
     }
-    Damage(){
-        window.KillList.push(this);
+    Damage(amount, x, y){
+        if(this.timebtwHits <= 0){
+            this.Health -= amount;
+            //if(this.Health <= 0)
+                //this.Death();
+            this.velocity.x = clamp(this.position.x - x, -1, 1) * 100;
+            if(this.Health <= 0)
+                this.Death();
+            
+            this.timebtwHits = this.timeForHits;
+        }
+        //window.KillList.push(this);
     }
     Death(){
+        var rt = new RagDoll();
+        rt.position.x = this.position.x;
+        rt.position.y = this.position.y;
+        rt.sprite = this.sprite;
+        rt.spriteOffsetX = 0;
+        rt.spriteOffsetY = 12;
+        rt.SpriteWidth = 8;
+        rt.SpriteHeight = 8;
+        rt.SpritelockStart = 0;
+        rt.SpritelockLength = 4;
+        rt.velocity.y = 0;
+        rt.Gravity = 0;
+        rt.LifeTime = 0.45;
+        rt.width = this.width;
+        rt.height = this.height;
+        window.Players.push(rt);
         PlaySound("Throw1", 0.8, 1);
         window.KillList.push(this);
     }

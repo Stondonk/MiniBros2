@@ -47,11 +47,19 @@ export default class RagDoll{
         this.AnimSpeed = 1;
 
         this.Collision = false;
+
+        this.started =false;
+        this.LifeTime = 0;
+        this.StartLifeTime = 0;
     }
     #image(fileName) {
         const img = new Image();
         img.src = `images/${fileName}`;
         return img;
+    }
+    start(){
+        this.StartLifeTime = this.LifeTime;
+        this.started = true;
     }
     Draw(){
         drawImage(ctx,this.sprite,this.spriteOffsetX * this.SpriteWidth,this.spriteOffsetY * this.SpriteHeight, this.SpriteWidth, this.SpriteHeight, (Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX)),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY)), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY,this.angle);
@@ -168,6 +176,8 @@ export default class RagDoll{
         this.spriteOffsetX = this.SpritePos;
     }
     Update(){
+        if(!this.started)
+            this.start();
         this.velocity.x = lerp(this.velocity.x, 0, 2 * DeltaTime);
         this.velocity.y += this.Gravity * DeltaTime;
 
@@ -175,6 +185,11 @@ export default class RagDoll{
             this.CollisionDect();
         if(this.SpritelockLength > 1)
             this.Animation();
+
+        if(this.LifeTime <= 0 && this.StartLifeTime != 0)
+            this.Death();
+        if(this.LifeTime > 0)
+            this.LifeTime -= DeltaTime;
 
         this.position.x += this.velocity.x * DeltaTime;
         this.position.y += this.velocity.y * DeltaTime;

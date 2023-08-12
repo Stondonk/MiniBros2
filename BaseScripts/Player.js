@@ -127,6 +127,7 @@ export default class player{
         this.bgDim = 0.5;
 
         this.CharacterSkin = 0;
+        this.CharacterSounds = ["","PickUp1","Throw1","HitSo","deathSM","Luigi","LuigiPickUp","LuigiThrow","LuigiHit","LuigiDead"];
         this.WalkTiming = 0.2;
     }
     #image(fileName) {
@@ -135,8 +136,8 @@ export default class player{
         return img;
     }
     Start(){
-        if(this.CharacterSkin == 1)
-            PlaySound("Luigi", 1, 1);
+        if(this.CharacterSounds[this.CharacterSkin * 5] != "")
+            PlaySound(this.CharacterSounds[this.CharacterSkin * 5], 1, 1);
         MoveCamTarget(this.position.x - 32, )
         this.Started = true;
     }
@@ -493,7 +494,7 @@ export default class player{
                                 this.PickUpOBJ.HoldSprite = true;
                                 this.PickUpOBJ.velocity.x = 0;
                                 this.PickUpOBJ.velocity.y = 0;
-                                PlaySound("PickUp1", 1, 1);
+                                PlaySound(this.CharacterSounds[(this.CharacterSkin * 5)+1], 1, 1);
                                 console.log(this.PickUpOBJ);
                                 this.PickUpHoldTime = 0;
                                 index = window.Players.length;
@@ -502,7 +503,7 @@ export default class player{
                 }
             
         }else if(this.PickUpOBJ != null && !this.PickUpPress){
-            PlaySound("Throw1", 1, 1);
+            PlaySound(this.CharacterSounds[(this.CharacterSkin * 5)+2], 1, 1);
             this.PickUpOBJ.velocity.x = (50 * this.Direction) + this.velocity.x;
             this.PickUpOBJ.Throw = true;
             this.PickUpOBJ = null;
@@ -519,7 +520,13 @@ export default class player{
             //if(this.Health <= 0)
                 //this.Death();
             this.velocity.x = clamp(this.position.x - x, -1, 1) * 100;
-            this.timebtwHits = 1;
+            if(this.Health > 0){
+                if(this.CharacterSkin != 1)
+                    PlaySound(this.CharacterSounds[(this.CharacterSkin * 5)+3],1,1);
+                else
+                    PlaySound("LuigiHit",1,1);
+                    this.timebtwHits = 1;
+            }
         }
     }
     Death(){
@@ -528,12 +535,12 @@ export default class player{
         rt.position.y = this.position.y;
         rt.sprite = this.sprite;
         rt.spriteOffsetX = 0;
-        rt.spriteOffsetY = this.CharacterSkin * this.SpriteHeight;
+        rt.spriteOffsetY = (this.CharacterSkin * 2);
         rt.SpriteWidth = 8;
         rt.SpriteHeight = 8;
-        rt.SpritelockStart = 7;
+        rt.SpritelockStart = 9;
         rt.SpritelockLength = 2;
-        rt.velocity.y = this.velocity.y - 100;
+        rt.velocity.y = - 100;
         //rt.velocity.x = this.Direction * 100;
         rt.width = this.width;
         rt.height = this.height;
@@ -541,9 +548,11 @@ export default class player{
         //CutMusic
         MusicTrack.currentTime = 0;
         MusicTrack.pause();
-        PlaySound("deathSM",1,1);
+        PlaySound(this.CharacterSounds[(this.CharacterSkin * 5)+4],1,1);
 
         LoadLevelTransition(CurrentLevel, 2);
+        if(this.PickUpOBJ != null)
+            this.PickUp();
 
         window.KillList.push(this);
     }
