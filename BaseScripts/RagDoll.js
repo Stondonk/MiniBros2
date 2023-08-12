@@ -40,6 +40,8 @@ export default class RagDoll{
         this.SpriteScaleX = 1;
         this.SpriteScaleY = 1;
 
+        //this.sprite
+
         this.Collision = false;
     }
     #image(fileName) {
@@ -148,7 +150,7 @@ export default class RagDoll{
 
         if(this.Collision == true)
             this.CollisionDect();
-        
+
         this.position.x += this.velocity.x * DeltaTime;
         this.position.y += this.velocity.y * DeltaTime;
     }
