@@ -42,6 +42,12 @@ export default class ShiGuy{
         this.HasCollision = true;
         this.Throw = false;
 
+        this.SpritePos = 0;
+        this.SpritelockStart = 0;
+        this.SpritelockLength = 4;
+        this.AnimTick = 0;
+        this.AnimSpeed = 1;
+
         this.Direction = 1;
         this.Speed = 20;
 
@@ -197,16 +203,38 @@ export default class ShiGuy{
             this.timebtwHits -= DeltaTime;
         }
 
+        if(this.isGrounded)
+            this.Animation();
+
         if(this.HasCollision)
             this.CollisionDect();
         this.position.x += this.velocity.x * DeltaTime;
         this.position.y += this.velocity.y * DeltaTime;
     }
+    Animation(){
+        //Bad way of doing it I know but what you gonna do about huh, yeah joe I know your looking hear get out shoo
+        //flipSprite  
+        if(this.SpritelockLength > 0){
+            this.AnimTick += DeltaTime;
+            if(this.AnimTick >= 0.125 * (1 / this.AnimSpeed)){
+                this.SpritePos+=1; this.AnimTick = 0;}
+
+            if(this.SpritePos >= this.SpritelockStart + this.SpritelockLength)
+                this.SpritePos = this.SpritelockStart;
+            else if(this.SpritePos < this.SpritelockStart)
+                this.SpritePos = this.SpritelockStart;
+        }
+        else if(this.SpritelockLength == 0)
+            this.SpritePos = this.SpritelockStart;
+
+
+        this.spriteOffsetX = this.SpritePos;
+    }
     Attack(){
         for (let index = 0; index < window.Players.length; index++) {
             const Current = window.Players[index];
             if(Current.ID == "Player"){
-                if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 4), this.position.x + (this.width / 2), this.position.y + (this.height / 4), Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)) == true)
+                if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 4)+ (Current.velocity.HiddenY * DeltaTime), this.position.x + (this.width / 2), this.position.y + (this.height / 4)+ (Current.velocity.HiddenY * DeltaTime), Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)) == true)
                     window.Players[index].Damage(1,this.position.x,this.position.y);
             }
         }
@@ -225,6 +253,7 @@ export default class ShiGuy{
         //window.KillList.push(this);
     }
     Death(){
+        /*
         var rt = new RagDoll();
         rt.position.x = this.position.x;
         rt.position.y = this.position.y;
@@ -238,6 +267,21 @@ export default class ShiGuy{
         rt.velocity.y = 0;
         rt.Gravity = 0;
         rt.LifeTime = 0.45;
+        rt.width = this.width;
+        rt.height = this.height;
+        window.Players.push(rt);
+        */
+        var rt = new RagDoll();
+        rt.position.x = this.position.x;
+        rt.position.y = this.position.y;
+        rt.sprite = this.sprite;
+        rt.spriteOffsetX = 0;
+        rt.spriteOffsetY = (this.spriteOffsetY + this.spriteDirOff);
+        rt.SpriteWidth = 8;
+        rt.SpriteHeight = 8;
+        rt.SpritelockStart = 0;
+        rt.SpritelockLength = 4;
+        rt.velocity.y = -50;
         rt.width = this.width;
         rt.height = this.height;
         window.Players.push(rt);

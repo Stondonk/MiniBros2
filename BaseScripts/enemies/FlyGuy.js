@@ -1,9 +1,10 @@
 
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
-import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, EntityImage} from "../../index.js";
+import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, EntityImage, pointbox, boxbox, PlaySound} from "../../index.js";
 import player from "../Player.js";
 import PickUpOBJ from "../FloorVeg.js";
+import RagDoll from "../RagDoll.js";
 
 export default class FlyGuy{
     constructor(){
@@ -18,13 +19,17 @@ export default class FlyGuy{
         }
         this.SelfDraw = false;
         this.ID = "Enemy";
+        this.Health = 1;
+        this.timebtwHits = 0;
+        this.timeForHits = 0.25;
+        this.RideAble = true;
         this.CanBePickedUp = true;
         this.angle = 0;
         this.width = 8
         this.height = 8;
         this.sprite = EntityImage;
         this.spriteOffsetX = 0;
-        this.spriteOffsetY = 4;
+        this.spriteOffsetY = 6;
         this.spriteDirOff = 0;
         this.SpriteTweakX = 0;
         this.SpriteTweakY = 0;
@@ -37,7 +42,14 @@ export default class FlyGuy{
         this.HasCollision = true;
         this.Throw = false;
 
+        this.SpritePos = 0;
+        this.SpritelockStart = 0;
+        this.SpritelockLength = 2;
+        this.AnimTick = 0;
+        this.AnimSpeed = 1;
+
         this.Direction = 1;
+        this.Speed = 15;
 
         this.Gravity = 120;
     }
@@ -48,7 +60,8 @@ export default class FlyGuy{
     }
     Draw(){
         //ctx.fillRect((Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX)),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY)), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY);
-        drawImage(ctx,this.sprite,this.spriteOffsetX * this.SpriteWidth,(this.spriteOffsetY + this.spriteDirOff) * this.SpriteHeight, this.SpriteWidth, this.SpriteHeight, (Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX) + this.SpriteTweakX),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY) + this.SpriteHeightOffset + this.SpriteTweakY), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY,this.angle);
+        if(Math.round(this.timebtwHits * 10)%2==0)
+            drawImage(ctx,this.sprite,this.spriteOffsetX * this.SpriteWidth,(this.spriteOffsetY + this.spriteDirOff) * this.SpriteHeight, this.SpriteWidth, this.SpriteHeight, (Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX) + this.SpriteTweakX),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY) + this.SpriteHeightOffset + this.SpriteTweakY), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY,this.angle);
     }
     CollisionDect(){
         const HalfWidth = this.width / 2, HalfHeight = this.height / 2;
@@ -155,7 +168,7 @@ export default class FlyGuy{
             newSpawnTr.spriteOffsetX = this.spriteOffsetX;
             newSpawnTr.spriteOffsetY = this.spriteOffsetY + this.spriteDirOff;
             newSpawnTr.ChangePickUp = false;
-            newSpawnTr.Throw = true;
+            //newSpawnTr.Throw = true;
             for (let index = 0; index < window.Players.length; index++) {
                 if(window.Players[index].ID == "Player"){
                     if(window.Players[index].PickUpOBJ == this)
@@ -163,18 +176,119 @@ export default class FlyGuy{
                 }
             }
             window.Players.push(newSpawnTr);
-            this.Death();}
+            window.KillList.push(this);
+        }else{
+            this.velocity.x = lerp(this.velocity.x, this.Speed * this.Direction, 8 * DeltaTime);
+            this.Attack();
 
+            for (let index = 0; index < Math.floor((LevelX.length) / MasterArrayLevelSize); index++) {
+                const indev = index * MasterArrayLevelSize;
+                if(LevelX[indev + 5] == 0){
+                    if(pointbox(this.position.x + (this.Direction * 5), this.position.y, LevelX[indev], LevelX[indev+1], LevelX[indev] + LevelX[indev+2],LevelX[indev + 1] + LevelX[indev + 3])){
+                        this.Direction = -this.Direction;
+                    }
+                }
+            }
+            for (let index = 0; index < window.Players.length; index++) {
+                const current = window.Players[index];
+                if(current.ID == "Enemy"){
+                    if(pointbox(this.position.x + (this.Direction * 5), this.position.y, current.position.x - (current.width / 2), current.position.y - (current.height / 2), current.position.x + (current.width / 2), current.position.y + (current.height / 2))){
+                        this.Direction = -this.Direction;
+                    }
+                }
+            }
+        }
+
+        if(this.timebtwHits > 0){
+            this.timebtwHits -= DeltaTime;
+        }
+
+        if(this.isGrounded)
+            this.velocity.y = -50;
+
+        this.Animation();
+
+        this.isGrounded = false;
         if(this.HasCollision)
             this.CollisionDect();
         this.position.x += this.velocity.x * DeltaTime;
         this.position.y += this.velocity.y * DeltaTime;
     }
-    Damage(){
+    Animation(){
+        //Bad way of doing it I know but what you gonna do about huh, yeah joe I know your looking hear get out shoo
+        //flipSprite  
+        if(this.SpritelockLength > 0){
+            this.AnimTick += DeltaTime;
+            if(this.AnimTick >= 0.125 * (1 / this.AnimSpeed)){
+                this.SpritePos+=1; this.AnimTick = 0;}
 
+            if(this.SpritePos >= this.SpritelockStart + this.SpritelockLength)
+                this.SpritePos = this.SpritelockStart;
+            else if(this.SpritePos < this.SpritelockStart)
+                this.SpritePos = this.SpritelockStart;
+        }
+        else if(this.SpritelockLength == 0)
+            this.SpritePos = this.SpritelockStart;
+
+
+        this.spriteOffsetX = this.SpritePos;
+    }
+    Attack(){
+        for (let index = 0; index < window.Players.length; index++) {
+            const Current = window.Players[index];
+            if(Current.ID == "Player"){
+                if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 4), this.position.x + (this.width / 2), this.position.y + (this.height / 4) , Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)) == true)
+                    window.Players[index].Damage(1,this.position.x,this.position.y);
+            }
+        }
+    }
+    Damage(amount, x, y){
+        if(this.timebtwHits <= 0){
+            this.Health -= amount;
+            //if(this.Health <= 0)
+                //this.Death();
+            this.velocity.x = clamp(this.position.x - x, -1, 1) * 100;
+            if(this.Health <= 0)
+                this.Death();
+            
+            this.timebtwHits = this.timeForHits;
+        }
+        //window.KillList.push(this);
     }
     Death(){
+        /*
+        var rt = new RagDoll();
+        rt.position.x = this.position.x;
+        rt.position.y = this.position.y;
+        rt.sprite = this.sprite;
+        rt.spriteOffsetX = 0;
+        rt.spriteOffsetY = 12;
+        rt.SpriteWidth = 8;
+        rt.SpriteHeight = 8;
+        rt.SpritelockStart = 0;
+        rt.SpritelockLength = 4;
+        rt.velocity.y = 0;
+        rt.Gravity = 0;
+        rt.LifeTime = 0.45;
+        rt.width = this.width;
+        rt.height = this.height;
+        window.Players.push(rt);
+        */
+        var rt = new RagDoll();
+        rt.position.x = this.position.x;
+        rt.position.y = this.position.y;
+        rt.sprite = this.sprite;
+        rt.spriteOffsetX = 0;
+        rt.spriteOffsetY = (this.spriteOffsetY + this.spriteDirOff);
+        rt.SpriteWidth = 8;
+        rt.SpriteHeight = 8;
+        rt.SpritelockStart = 0;
+        rt.SpritelockLength = 2;
+        rt.velocity.y = -50;
+        rt.width = this.width;
+        rt.height = this.height;
+        window.Players.push(rt);
+        PlaySound("Throw1", 0.8, 1);
         window.KillList.push(this);
     }
-
 }

@@ -6,6 +6,7 @@ import BasicBox from "./BaseScripts/InteractObjects/BasicBox.js";
 import OptionsMenu from "./Options.js";
 import PickUpOBJ from "./BaseScripts/FloorVeg.js";
 import ShiGuy from "./BaseScripts/enemies/ShiGuy.js";
+import FlyGuy from "./BaseScripts/enemies/FlyGuy.js";
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
 
@@ -349,13 +350,11 @@ export function LoadLevel(LevelName){
                                     Pic.Direction = parseFloat(CurrentObjectPriorityList[4]);
                                     window.Players.push(Pic);
                                 break;
-                                case "BuiGuy":
-                                    var Pic = new ShiGuy();
+                                case "FlyGuy":
+                                    var Pic = new FlyGuy();
                                     Pic.position.x = parseFloat(CurrentObjectPriorityList[1]);
                                     Pic.position.y = parseFloat(CurrentObjectPriorityList[2]);
                                     Pic.Direction = parseFloat(CurrentObjectPriorityList[4]);
-                                    Pic.Health = 2;
-                                    Pic.spriteOffsetY = 6;
                                     window.Players.push(Pic);
                                 break;
                                 case "Turnip":

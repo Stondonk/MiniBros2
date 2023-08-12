@@ -280,10 +280,11 @@ export default class player{
                 if (CornerY + this.height + (this.velocity.y * DeltaTime) + 1 >= CurrentY && CornerY + this.height + (this.velocity.y * DeltaTime) + 1 <= CurrentY + 2 && CornerX + this.width >= CurrentX && CornerX <= CurrentX + Current.width && this.velocity.y >= 0){
                     if(hasHitY){
                         if(Math.pow(CurrentY - this.position.y, 2) < Math.pow(CurrentOneY - this.position.y, 2))
-                            {CurrentOneY = CurrentY - 0.1 - (this.height / 2); hasHitY = true; CurrentVx = Current.velocity.x;}
+                            {CurrentOneY = CurrentY - 0.1 - (this.height / 2); hasHitY = true; CurrentVx = Current.velocity.x; CurrentVy = Current.velocity.y;}
                     }else{
                         CurrentOneY = CurrentY - 0.1 - (this.height / 2);
                         CurrentVx = Current.velocity.x;
+                        CurrentVy = Current.velocity.y;
                         hasHitY = true;
                     }
                     this.isGrounded = true;
@@ -296,7 +297,10 @@ export default class player{
         {
             this.position.y = (CurrentOneY);
             this.velocity.HiddenX = CurrentVx;
-            this.velocity.y = CurrentVy;
+            if(CurrentVy < 0)
+                this.velocity.HiddenY = CurrentVy;
+            
+                this.velocity.y = 0;
         }
     }
     Animation(){
