@@ -59,7 +59,7 @@ export default class player{
         };
         this.CanDoLoad = false;
         this.SelfDraw = true;
-        this.Health = 3;
+        this.Health = 2;
         this.ID = "Player";
         
         this.timebtwHits = 0;
@@ -150,6 +150,11 @@ export default class player{
         //ctx.scale(4,4);
         if(Math.round(this.timebtwHits * 10)%2==0)
             drawImage(ctx,this.sprite,this.spriteOffset * this.SpriteWidth,(this.spriteOffsetLayer) * this.SpriteHeight + (this.CharacterSkin *( this.SpriteHeight * 2)), this.SpriteWidth, this.SpriteHeight, (Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX)),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY) + this.SpriteHeightOffset), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY,this.lerpAngle);
+
+        for (let index = 0; index < this.Health; index++) {
+            const PointX = 2, PointY = (2*this.Health) + 2;
+            drawImage(ctx,this.sprite,59,96, 5, 5, PointX, PointY, 5, 5, this.lerpAngle);
+        }
     }
     CollisionDect(){
         const HalfWidth = this.width / 2, HalfHeight = this.height / 2;
@@ -499,6 +504,8 @@ export default class player{
         }else{
             this.PickUpHoldTime = 0;
         }
+        if(IncroTime == false)
+            this.PickUpHoldTime = 0;
         //this.PickUpOBJ
     }
     Damage(amount, x, y){
@@ -506,7 +513,7 @@ export default class player{
             this.Health -= amount;
             //if(this.Health <= 0)
                 //this.Death();
-            this.fHorizontal = clamp(this.position.x - x, -1, 1) * 20;
+            this.velocity.x = clamp(this.position.x - x, -1, 1) * 100;
             this.timebtwHits = 1;
         }
     }

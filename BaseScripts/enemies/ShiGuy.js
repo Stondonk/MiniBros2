@@ -168,6 +168,8 @@ export default class ShiGuy{
             window.KillList.push(this);
         }else{
             this.velocity.x = lerp(this.velocity.x, this.Speed * this.Direction, 8 * DeltaTime);
+            this.Attack();
+
             for (let index = 0; index < Math.floor((LevelX.length) / MasterArrayLevelSize); index++) {
                 const indev = index * MasterArrayLevelSize;
                 if(pointbox(this.position.x + (this.Direction * 5), this.position.y, LevelX[indev], LevelX[indev+1], LevelX[indev] + LevelX[indev+2],LevelX[indev + 1] + LevelX[indev + 3])){
@@ -193,8 +195,8 @@ export default class ShiGuy{
         for (let index = 0; index < window.Players.length; index++) {
             const Current = window.Players[index];
             if(Current.ID == "Player"){
-                if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 4), this.position.x + (this.width / 2), this.position.y + (this.height / 4), Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)))
-                    Current.Damage();
+                if(boxbox(this.position.x - (this.width / 2), this.position.y - (this.height / 4), this.position.x + (this.width / 2), this.position.y + (this.height / 4), Current.position.x - (Current.width / 2), Current.position.y - (Current.height / 2), Current.position.x + (Current.width / 2), Current.position.y + (Current.height / 2)) == true)
+                    window.Players[index].Damage(1,this.position.x,this.position.y);
             }
         }
     }
