@@ -157,7 +157,7 @@ export default class ShiGuy{
             newSpawnTr.spriteOffsetX = this.spriteOffsetX;
             newSpawnTr.spriteOffsetY = this.spriteOffsetY + this.spriteDirOff;
             newSpawnTr.ChangePickUp = false;
-            newSpawnTr.Throw = true;
+            //newSpawnTr.Throw = true;
             for (let index = 0; index < window.Players.length; index++) {
                 if(window.Players[index].ID == "Player"){
                     if(window.Players[index].PickUpOBJ == this)
