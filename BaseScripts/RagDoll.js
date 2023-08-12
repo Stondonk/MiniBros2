@@ -173,6 +173,8 @@ export default class RagDoll{
 
         if(this.Collision == true)
             this.CollisionDect();
+        if(this.SpritelockLength > 1)
+            this.Animation();
 
         this.position.x += this.velocity.x * DeltaTime;
         this.position.y += this.velocity.y * DeltaTime;

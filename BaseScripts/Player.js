@@ -531,6 +531,8 @@ export default class player{
         rt.spriteOffsetY = this.CharacterSkin * this.SpriteHeight;
         rt.SpriteWidth = 8;
         rt.SpriteHeight = 8;
+        rt.SpritelockStart = 7;
+        rt.SpritelockLength = 2;
         rt.velocity.y = this.velocity.y - 100;
         //rt.velocity.x = this.Direction * 100;
         rt.width = this.width;
