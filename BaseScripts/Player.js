@@ -454,6 +454,11 @@ export default class player{
         if(!this.Duck)
             this.JustDuck = false;
 
+        //Death
+        if(this.Health <= 0){
+            this.Death();
+        }
+
         this.isGrounded = false;
         this.velocity.HiddenX = 0;
         this.velocity.HiddenY = 0;
@@ -521,13 +526,15 @@ export default class player{
         var rt = new RagDoll();
         rt.position.x = this.position.x;
         rt.position.y = this.position.y;
-        rt.sprite = PlayerImage;
+        rt.sprite = this.sprite;
         rt.spriteOffsetX = 0;
-        rt.spriteOffsetY = 2;
+        rt.spriteOffsetY = 0;
+        rt.SpriteWidth = 8;
+        rt.SpriteHeight = 8;
         rt.velocity.y = this.velocity.y - 100;
         rt.velocity.x = this.velocity.x + this.Direction * 100;
-        rt.width = this.width - 2;
-        rt.SpriteHeightOffset = -4;
+        rt.width = this.width;
+        rt.height = this.height;
         window.Players.push(rt);
 
         window.KillList.push(this);
