@@ -152,8 +152,8 @@ export default class player{
             drawImage(ctx,this.sprite,this.spriteOffset * this.SpriteWidth,(this.spriteOffsetLayer) * this.SpriteHeight + (this.CharacterSkin *( this.SpriteHeight * 2)), this.SpriteWidth, this.SpriteHeight, (Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX)),Math.round((this.position.y - cameraIntY - (this.SpriteHeight / 2) * this.SpriteScaleY) + this.SpriteHeightOffset), this.SpriteWidth * this.SpriteScaleX, this.SpriteHeight * this.SpriteScaleY,this.lerpAngle);
 
         for (let index = 0; index < this.Health; index++) {
-            const PointX = 2, PointY = (2*this.Health) + 2;
-            drawImage(ctx,this.sprite,59,96, 5, 5, PointX, PointY, 5, 5, this.lerpAngle);
+            const PointX = 2, PointY = (5*index) + 2;
+            drawImage(ctx,this.sprite,59,96 + (this.CharacterSkin * 5), 5, 5, PointX, PointY, 5, 5, this.lerpAngle);
         }
     }
     CollisionDect(){

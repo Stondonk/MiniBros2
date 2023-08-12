@@ -172,8 +172,10 @@ export default class ShiGuy{
 
             for (let index = 0; index < Math.floor((LevelX.length) / MasterArrayLevelSize); index++) {
                 const indev = index * MasterArrayLevelSize;
-                if(pointbox(this.position.x + (this.Direction * 5), this.position.y, LevelX[indev], LevelX[indev+1], LevelX[indev] + LevelX[indev+2],LevelX[indev + 1] + LevelX[indev + 3])){
-                    this.Direction = -this.Direction;
+                if(LevelX[indev + 5] == 0){
+                    if(pointbox(this.position.x + (this.Direction * 5), this.position.y, LevelX[indev], LevelX[indev+1], LevelX[indev] + LevelX[indev+2],LevelX[indev + 1] + LevelX[indev + 3])){
+                        this.Direction = -this.Direction;
+                    }
                 }
             }
             for (let index = 0; index < window.Players.length; index++) {

@@ -346,7 +346,7 @@ export function LoadLevel(LevelName){
                                     var Pic = new ShiGuy();
                                     Pic.position.x = parseFloat(CurrentObjectPriorityList[1]);
                                     Pic.position.y = parseFloat(CurrentObjectPriorityList[2]);
-                                    Pic.Direction = parseFloat(CurrentObjectPriorityList[3]);
+                                    Pic.Direction = parseFloat(CurrentObjectPriorityList[4]);
                                     window.Players.push(Pic);
                                 break;
                                 case "Turnip":
