@@ -364,15 +364,15 @@ export function LoadLevel(LevelName){
                                     window.Players.push(Pic);
                                 break;
                                 case "Mushroom":
-                                    var Pic = new PickUpOBJ();
-                                    Pic.position.x = parseFloat(CurrentObjectPriorityList[1]);
-                                    Pic.position.y = parseFloat(CurrentObjectPriorityList[2]);
-                                    Pic.spriteOffsetX = 3;
-                                    Pic.RideAble = true;
-                                    Pic.ChangePickUp = false;
-                                    Pic.HasCollision = true;
+                                    var Mus = new PickUpOBJ();
+                                    Mus.position.x = parseFloat(CurrentObjectPriorityList[1]);
+                                    Mus.position.y = parseFloat(CurrentObjectPriorityList[2]);
+                                    Mus.spriteOffsetX = 3;
+                                    Mus.RideAble = true;
+                                    Mus.ChangePickUp = false;
+                                    Mus.HasCollision = true;
                                     //Pic.angle = parseFloat(CurrentObjectPriorityList[3]);
-                                    window.Players.push(Pic);
+                                    window.Players.push(Mus);
                                 break;
                                 case "MainMenu":
                                     var Agnt = new MainMenu();
@@ -409,6 +409,7 @@ export function LoadLevel(LevelName){
                             //RTOB.position.x = CurrentObjectPriorityList[1];
                             //RTOB.position.y = CurrentObjectPriorityList[2];
                             CurrentObjectPriorityList = [];
+                            CurrentItem = "";
                             CurrentOBJState = 0;
                             //console.log(CurrentObject);
                             //window.Players.push(RTOB);
