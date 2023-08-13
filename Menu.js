@@ -1,6 +1,6 @@
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
-import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, MenuUIImage, MouseX, MouseY, LoadLevel, SetScreen, VeclineLine, TitleImage, EntityImage, LoadLevelTransition} from "./index.js";
+import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, MouseX, MouseY, LoadLevel, SetScreen, VeclineLine, TitleImage, EntityImage, LoadLevelTransition} from "./index.js";
 
 export default class MainMenu{
     constructor(){

@@ -167,7 +167,7 @@ export default class player{
         const CornerX = this.position.x - HalfWidth, CornerY = this.position.y - HalfHeight;
         var CurrentOneX = this.position.x;
         var CurrentOneY = this.position.y;
-        var hasHitX = false, hasHitY = false;
+        var hasHitX = false, hasHitY = false, hasHitCornor = false;
         for (let index = 0; index < Math.floor((LevelX.length) / MasterArrayLevelSize); index++) {
             const indev = index * MasterArrayLevelSize;
 
@@ -218,6 +218,9 @@ export default class player{
                 }
 
                 //ground
+                if (CornerX + (this.velocity.x + this.velocity.HiddenX) * DeltaTime >= LevelX[indev] - this.width && CornerX + (this.velocity.x + this.velocity.HiddenX)* DeltaTime <= LevelX[indev] + LevelX[indev + 2]  && CornerY + this.height + (this.velocity.y + this.velocity.HiddenY) * DeltaTime >= LevelX[indev+1] && CornerY + (this.velocity.y + this.velocity.HiddenY) * DeltaTime <= LevelX[indev+1] + LevelX[indev + 3]) {
+                    hasHitCornor = true;
+                }
             
                 if (CornerY + ((this.velocity.y + this.velocity.HiddenY) * DeltaTime) + 1 >= LevelX[indev + 1] - this.height && CornerY + ((this.velocity.y + this.velocity.HiddenY) * DeltaTime) <= LevelX[indev + 1] + LevelX[indev + 3] - this.height && CornerX + this.width >= LevelX[indev] && CornerX <= LevelX[indev] + (LevelX[indev + 2])){
                     this.isGrounded = true;
@@ -232,6 +235,11 @@ export default class player{
                         CurrentOneY = LevelX[indev + 1] - (this.height / 2) - 0.1;
                         hasHitY = true;
                     }
+                }
+            }
+            else if(LevelX[indev + 5] == 2){
+                if (CornerX + (this.velocity.x + this.velocity.HiddenX) * DeltaTime >= LevelX[indev] - this.width && CornerX + (this.velocity.x + this.velocity.HiddenX)* DeltaTime <= LevelX[indev] + LevelX[indev + 2]  && CornerY + this.height >= LevelX[indev+1] && CornerY <= LevelX[indev+1] + LevelX[indev + 3]){
+                    this.Climbing = true;
                 }
             }
             
@@ -251,16 +259,17 @@ export default class player{
             //this.position.y = (CurrentOneY);
             this.velocity.y = 0;
             this.velocity.HiddenY = 0;
+            if(hasHitX){
+                if(CurrentOneY > this.position.y)
+                    this.position.y -= 1;
+                else
+                    this.position.y += 1;
+            }
 
             this.HasHitForY = true;
             this.CollisionYPoint = (CurrentOneY);
         }
-        if(hasHitX && hasHitY){
-            var offit = 0.1;
-            if(this.position.y < CurrentOneY)
-                offit = -0.1;
-            this.position.y -= offit;
-        }
+
 
         //Object dect
 
@@ -324,6 +333,14 @@ export default class player{
         if(this.isGrounded == false){
             this.SpritelockStart = 4;
             this.SpritelockLength = 1;
+
+            if(this.Climbing && (this.controller.x.Axis != 0 || this.controller.y.Axis != 0)){
+                this.SpritelockStart = 7;
+                this.SpritelockLength = 2;}
+            else if(this.Climbing && (this.controller.x.Axis == 0 && this.controller.y.Axis == 0)){
+                this.SpritelockStart = 7;
+                this.SpritelockLength = 0;
+            }
         }
         else if(Math.round(this.velocity.x) < -1.1 || Math.round(this.velocity.x) > 1.1){
             this.SpritelockStart = 0;
@@ -339,6 +356,11 @@ export default class player{
         else{
             this.SpritelockStart = 0;
             this.SpritelockLength = 0;
+
+            if(this.Climbing && !this.isGrounded){
+                this.SpritelockStart = 7;
+                this.SpritelockLength = 0;}
+
             if(this.Duck){
                 if(this.PickUpHoldTime <= 0){
                     this.SpritelockStart = 5;
@@ -394,8 +416,8 @@ export default class player{
 
         //if(this.position.y <= 0)
         //MoveCamTarget(-24,Math.round((this.position.y - 56)));
-        if(Inputs.x.Axis != 0 || Inputs.y.Axis != 0)
-            this.angle = Math.atan2(Inputs.x.Axis ,Inputs.y.Axis) * 180 / Math.PI;
+        if(this.controller.x.Axis != 0 || this.controller.y.Axis != 0)
+            this.angle = Math.atan2(this.controller.x.Axis ,this.controller.y.Axis) * 180 / Math.PI;
 
         this.ForwardX = Math.sin(Math.PI / 180.0 * this.angle);
         this.ForwardY = -Math.cos(Math.PI / 180.0 * this.angle);
@@ -404,8 +426,8 @@ export default class player{
         this.Draw();
 
         //Direction
-        if(Inputs.x.Axis != 0)
-            this.Direction = Inputs.x.Axis;
+        if(this.controller.x.Axis != 0)
+            this.Direction = this.controller.x.Axis;
 
         //Timings
 
@@ -418,18 +440,26 @@ export default class player{
         }
         //Movment X axis
         this.fHorizontal = this.velocity.x;
-        this.fHorizontal += Inputs.x.Axis * this.Currentspeed * DeltaTime;
+        this.fHorizontal += this.controller.x.Axis * this.Currentspeed * DeltaTime;
 
         const fHorizontalDampingWhenStopping = 0.5, fHorizontalDampingWhenTurning = 0.65, fHorizontalDampingBasic = 0.65;
-        if (Math.abs(Inputs.x.Axis) < 0.01)
+        if (Math.abs(this.controller.x.Axis) < 0.01)
             this.fHorizontal *= Math.pow(1 - fHorizontalDampingWhenStopping, DeltaTime * 10);
-        else if (Math.sign(Inputs.x.Axis) != Math.sign(this.fHorizontal))
+        else if (Math.sign(this.controller.x.Axis) != Math.sign(this.fHorizontal))
             this.fHorizontal *= Math.pow(1 - fHorizontalDampingWhenTurning, DeltaTime * 10);
         else
             this.fHorizontal *= Math.pow(1 - fHorizontalDampingBasic, DeltaTime * 10);
 
         this.velocity.x = this.fHorizontal;
-        this.velocity.y += this.Gravity * DeltaTime;
+        if(!this.Climbing)
+            this.velocity.y += this.Gravity * DeltaTime;
+        else{
+            this.fVertical = this.velocity.y;
+            this.fVertical -= this.controller.y.Axis * this.Currentspeed * DeltaTime;
+            this.fVertical *= Math.pow(1.0 - (0.65), DeltaTime * 10);
+
+            this.velocity.y = this.fVertical;
+        }
 
         //Jumping
         if(this.controller.a.pressed == true){
@@ -477,6 +507,7 @@ export default class player{
         }
 
         this.isGrounded = false;
+        this.Climbing = false;
         this.velocity.HiddenX = 0;
         this.velocity.HiddenY = 0;
 

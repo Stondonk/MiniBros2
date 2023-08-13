@@ -19,7 +19,6 @@ var InBrows = true, JustPause = false;
 var NoPause = false;
 var PauseButtonPressed = false;
 const LogoImage = image("MikeLogo.png");
-const MenuUIImage = image("MenuScreen.png");
 const TitleImage = image("TitleCard.png");
 const PlayerImage = image("BasePl1Spr.png");
 const EntityImage = image("miniBrosEntities.png");
@@ -937,4 +936,4 @@ function Update(){
 
 }
 
-export {DeltaTime, cameraX, cameraIntX, cameraY, cameraIntY, MouseX, MouseY, PlayerImage, MenuUIImage, TitleImage, TextImg, MissItems, InBrows, EntityImage, MusicTrackTitle, MusicTrack, SFXTrack, CurrentLevel};
+export {DeltaTime, cameraX, cameraIntX, cameraY, cameraIntY, MouseX, MouseY, PlayerImage, TitleImage, TextImg, MissItems, InBrows, EntityImage, MusicTrackTitle, MusicTrack, SFXTrack, CurrentLevel};
