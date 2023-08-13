@@ -363,6 +363,17 @@ export function LoadLevel(LevelName){
                                     //Pic.angle = parseFloat(CurrentObjectPriorityList[3]);
                                     window.Players.push(Pic);
                                 break;
+                                case "Mushroom":
+                                    var Pic = new PickUpOBJ();
+                                    Pic.position.x = parseFloat(CurrentObjectPriorityList[1]);
+                                    Pic.position.y = parseFloat(CurrentObjectPriorityList[2]);
+                                    Pic.spriteOffsetX = 3;
+                                    Pic.RideAble = true;
+                                    Pic.ChangePickUp = false;
+                                    Pic.HasCollision = true;
+                                    //Pic.angle = parseFloat(CurrentObjectPriorityList[3]);
+                                    window.Players.push(Pic);
+                                break;
                                 case "MainMenu":
                                     var Agnt = new MainMenu();
                                     Agnt.position.x = parseFloat(CurrentObjectPriorityList[1]);

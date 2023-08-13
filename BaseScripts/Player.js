@@ -551,6 +551,7 @@ export default class player{
                                 this.PickUpOBJ.HoldSprite = true;
                                 this.PickUpOBJ.velocity.x = 0;
                                 this.PickUpOBJ.velocity.y = 0;
+                                this.PickUpOBJ.NoPickUpCol = false;
                                 PlaySound(this.CharacterSounds[(this.CharacterSkin * 5)+1], 1, 1);
                                 console.log(this.PickUpOBJ);
                                 this.PickUpHoldTime = 0;
@@ -561,6 +562,11 @@ export default class player{
             
         }else if(this.PickUpOBJ != null && !this.PickUpPress){
             PlaySound(this.CharacterSounds[(this.CharacterSkin * 5)+2], 1, 1);
+            if(this.PickUpOBJ.HasCollision == true){
+                this.PickUpOBJ.position.x = this.position.x - (1 * this.Direction);
+                this.PickUpOBJ.position.y = this.position.y;
+            }
+            this.PickUpOBJ.NoPickUpCol = true;
             this.PickUpOBJ.velocity.x = (50 * this.Direction) + this.velocity.x;
             this.PickUpOBJ.Throw = true;
             this.PickUpOBJ = null;

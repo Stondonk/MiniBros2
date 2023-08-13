@@ -18,6 +18,7 @@ export default class PickUpOBJ{
         this.SelfDraw = false;
         this.ID = "Pickup";
         this.CanBePickedUp = true;
+        this.Rideable = false;
         this.angle = 0;
         this.width = 8
         this.height = 8;
@@ -33,8 +34,12 @@ export default class PickUpOBJ{
         this.SpriteScaleY = 1;
         this.SpriteHeightOffset = 0;
         this.HasCollision = false;
+        this.NoPickUpCol = true;
         this.Throw = false;
         this.ChangePickUp = true;
+
+        this.CollisionYPoint = 0;
+        this.HasHitForY = false;
 
         this.Gravity = 120;
     }
@@ -129,7 +134,8 @@ export default class PickUpOBJ{
         }
         if(hasHitY)
         {
-            this.position.y = (CurrentOneY);
+            this.CollisionYPoint = (CurrentOneY);
+            this.HasHitForY = true;
             this.velocity.y = 0;
         }
         if(hasHitX && hasHitY){
@@ -139,10 +145,53 @@ export default class PickUpOBJ{
             this.position.y -= offit;
         }
     }
+    EntityCollision(){
+        const HalfWidth = this.width / 2, HalfHeight = this.height / 2;
+        const CornerX = this.position.x - HalfWidth, CornerY = this.position.y - HalfHeight;
+        var CurrentOneX = this.position.x;
+        var CurrentOneY = this.position.y;
+        var CurrentVx = 0, CurrentVy = 0;
+        var hasHitX = false, hasHitY = false;
+        for (let index = 0; index < window.Players.length; index++) {
+            const Current = window.Players[index];
+            if(Current.RideAble == true){
+                var CurrentX = Current.position.x - Current.width / 2, CurrentY = Current.position.y - Current.height / 2;
+                
+                if (CornerY + this.height + (this.velocity.y * DeltaTime) + 1 >= CurrentY && CornerY + this.height + (this.velocity.y * DeltaTime) + 1 <= CurrentY + 2 && CornerX + this.width >= CurrentX && CornerX <= CurrentX + Current.width && this.velocity.y >= 0){
+                    if(hasHitY){
+                        if(Math.pow(CurrentY - this.position.y, 2) < Math.pow(CurrentOneY - this.position.y, 2))
+                            {CurrentOneY = CurrentY - 0.1 - (this.height / 2); hasHitY = true; CurrentVx = Current.velocity.x; CurrentVy = Current.velocity.y;}
+                    }else{
+                        CurrentOneY = CurrentY - 0.1 - (this.height / 2);
+                        CurrentVx = Current.velocity.x;
+                        CurrentVy = Current.velocity.y;
+                        hasHitY = true;
+                    }
+                }
+                
+            }
+            
+        }
+        if(hasHitY)
+        {
+            this.CollisionYPoint = (CurrentOneY);
+            this.HasHitForY = true;
+            this.velocity.HiddenX = CurrentVx;
+            if(CurrentVy < 0)
+                this.velocity.HiddenY = CurrentVy;
+
+                this.velocity.y = 0;
+        }
+    }
     Update(){
         //this.velocity.x = lerp(this.velocity.x, 0, 2 * DeltaTime);
         if(this.Throw){
-            this.velocity.y += this.Gravity * DeltaTime;
+            if(!this.HasCollision)
+                this.velocity.y += this.Gravity * DeltaTime;
+            else{
+                if(Math.round(this.velocity.x / 2) == 0)
+                    this.Throw = false;
+            }
             this.Attack();
         }
 
@@ -152,9 +201,18 @@ export default class PickUpOBJ{
             else{
                 this.spriteOffsetY = 10;this.SpriteTweakY = -4;}
         }
+        this.HasHitForY = false;
 
-        if(this.HasCollision)
+        if(this.HasCollision && this.NoPickUpCol){
+            this.velocity.x = lerp(this.velocity.x, 0, 2 * DeltaTime);
+            this.velocity.y += this.Gravity * DeltaTime;
+            this.EntityCollision();
             this.CollisionDect();
+        }
+
+        if(this.HasHitForY)
+            this.position.y = this.CollisionYPoint;
+
         this.position.x += this.velocity.x * DeltaTime;
         this.position.y += this.velocity.y * DeltaTime;
     }
