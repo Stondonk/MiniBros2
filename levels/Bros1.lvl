@@ -10,8 +10,8 @@
 {Turnip,-16,0,0,}
 {Turnip,-24,0,0,}
 {Mushroom,12,-8,}
-{Mushroom,12,-12,}
-{Mushroom,12,-12,}
+{Mushroom,12,-16,}
+{Mushroom,12,-24,}
 {GameUI,}
 {BG,CloudsBg1.png,}
 {Music,Smb2Overworld,}

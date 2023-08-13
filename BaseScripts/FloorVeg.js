@@ -18,7 +18,7 @@ export default class PickUpOBJ{
         this.SelfDraw = false;
         this.ID = "Pickup";
         this.CanBePickedUp = true;
-        this.Rideable = false;
+        this.RideAble = false;
         this.angle = 0;
         this.width = 8
         this.height = 8;
@@ -130,7 +130,7 @@ export default class PickUpOBJ{
         {
             this.position.x = (CurrentOneX);
             this.velocity.x = 0;
-            this.fHorizontal = this.velocity.x;
+            //this.fHorizontal = this.velocity.x;
         }
         if(hasHitY)
         {
@@ -177,8 +177,7 @@ export default class PickUpOBJ{
             this.CollisionYPoint = (CurrentOneY);
             this.HasHitForY = true;
             this.velocity.HiddenX = CurrentVx;
-            if(CurrentVy < 0)
-                this.velocity.HiddenY = CurrentVy;
+
 
                 this.velocity.y = 0;
         }
@@ -208,6 +207,9 @@ export default class PickUpOBJ{
             this.velocity.y += this.Gravity * DeltaTime;
             this.EntityCollision();
             this.CollisionDect();
+            this.RideAble = true;
+        }else if(this.HasCollision && !this.NoPickUpCol){
+            this.RideAble = false;
         }
 
         if(this.HasHitForY)
