@@ -200,19 +200,19 @@ export default class player{
                     if(hasHitY){
                         if(Math.pow(LevelX[indev + 1]- this.position.y, 2) < Math.pow(LevelX[indev+ 1] + (LevelX[indev + 3]) - this.position.y, 2)){
                             if(Math.pow(LevelX[indev+ 1]- this.position.y, 2) < Math.pow(CurrentOneY - this.position.y, 2))
-                                CurrentOneY = LevelX[indev+ 1] - (this.height / 2) - 0.1;
+                                CurrentOneY = LevelX[indev+ 1] - (this.height / 2) - 0.2;
                         }else{
                             if(Math.pow(LevelX[indev+ 1] + (LevelX[indev + 3])- this.position.y, 2) < Math.pow(CurrentOneY - this.position.y, 2))
-                                CurrentOneY = LevelX[indev+ 1] + LevelX[indev + 3] + (this.height / 2) +0.1;
+                                CurrentOneY = LevelX[indev+ 1] + LevelX[indev + 3] + (this.height / 2) +0.2;
                         }
                         if (CornerY + this.height  < LevelX[indev + 1] && CornerY  > LevelX[indev + 1] + LevelX[indev + 3]) {
                             this.velocity.y = 0;
                         }
                     }else{
                         if(Math.pow(LevelX[indev+1]- this.position.y, 2) < Math.pow(LevelX[indev+1] + (LevelX[indev + 3]) - this.position.y, 2))
-                            CurrentOneY = LevelX[indev+1] - (this.height / 2) - 0.1;
+                            CurrentOneY = LevelX[indev+1] - (this.height / 2) - 0.2;
                         else
-                            CurrentOneY = LevelX[indev+1] + (LevelX[indev + 3]) + (this.height / 2) + 0.1;
+                            CurrentOneY = LevelX[indev+1] + (LevelX[indev + 3]) + (this.height / 2) + 0.2;
                         hasHitY = true;
                     }
                 }
