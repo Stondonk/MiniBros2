@@ -259,15 +259,16 @@ export default class player{
             //this.position.y = (CurrentOneY);
             this.velocity.y = 0;
             this.velocity.HiddenY = 0;
+            var HitPlaceY = 0;
             if(hasHitX){
                 if(CurrentOneY > this.position.y)
-                    this.position.y -= 1;
+                HitPlaceY = -1;
                 else
-                    this.position.y += 1;
+                HitPlaceY = 1;
             }
 
             this.HasHitForY = true;
-            this.CollisionYPoint = (CurrentOneY);
+            this.CollisionYPoint = (CurrentOneY) ;
         }
 
 
