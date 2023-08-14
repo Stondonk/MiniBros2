@@ -27,6 +27,7 @@ const MissItems = image("MissItems.png");
 var BGImg = image("CloudsBg1.png");
 var TileTextureImage = image("MinibrosTileSet.png");
 var PauseTimeSinc = 0;
+var DeathPlaneHeight = 0;
 //transition Stuff
 var CharacterSpawnSet = 0;
 var TransitionVal = 0, ScreenTime = 1, OpenTransition = true, TransitionForTime = 1, TimeWhenStartTransition = 0, LevelToLoad = "", CurrentLevel = "";
