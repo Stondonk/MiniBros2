@@ -88,6 +88,8 @@ export default class GoalOBJ{
                     //rt.velocity.x = this.Direction * 100;
                     rt.width = this.width;
                     rt.height = this.height;
+                    if(window.Players[index].PickUpOBJ != null)
+                    window.Players[index].PickUp();
                     window.Players.push(rt);
                     LoadLevelTransition(this.LoadLevel + ".lvl", 2);
                     window.KillList.push(window.Players[index]);
