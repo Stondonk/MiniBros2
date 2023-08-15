@@ -233,9 +233,17 @@ function keydown(key){
     if(key.keyCode == 27){
         Inputs.enter.pressed = true;}
 
-    if(key.keyCode == 48){
-        LoadLevel("Brin.lvl");
+    /*
+    if(key.keyCode == 49){
+        LoadLevel("Bros1.lvl");
     }
+    if(key.keyCode == 50){
+        LoadLevel("Bros2.lvl");
+    }
+    if(key.keyCode == 51){
+        LoadLevel("Bros3.lvl");
+    }
+    */
     controllerEnable = false;
 }
 
@@ -470,6 +478,8 @@ export function LoadLevel(LevelName){
                             break;
                     }
                     
+                    DeltaTime = 0;
+                    InBrows = false;
                 }
                 LevelX = HolderD;
                 InBrows = true;

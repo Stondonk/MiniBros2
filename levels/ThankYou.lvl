@@ -1,0 +1,4 @@
+*EndTile.png! -0,0,64,64,-
+[-32,-32,64,64,1,0,]
+{GameUI,}
+{BG,CloudsBg1.png,}
