@@ -1,7 +1,7 @@
 
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
-import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize} from "../index.js";
+import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, DeathPlaneHeight} from "../index.js";
 import player from "./Player.js";
 
 export default class RagDoll{
@@ -45,6 +45,8 @@ export default class RagDoll{
         this.SpritelockLength = 0;
         this.AnimTick = 0;
         this.AnimSpeed = 1;
+
+        this.Drag = true;
 
         this.Collision = false;
 
@@ -178,7 +180,8 @@ export default class RagDoll{
     Update(){
         if(!this.started)
             this.start();
-        this.velocity.x = lerp(this.velocity.x, 0, 2 * DeltaTime);
+        if(this.Drag)
+            this.velocity.x = lerp(this.velocity.x, 0, 2 * DeltaTime);
         this.velocity.y += this.Gravity * DeltaTime;
 
         if(this.Collision == true)
@@ -186,7 +189,8 @@ export default class RagDoll{
         if(this.SpritelockLength > 1)
             this.Animation();
 
-        if(this.LifeTime <= 0 && this.StartLifeTime != 0)
+        
+        if((this.LifeTime <= 0 && this.StartLifeTime != 0) || (this.position.y >= DeathPlaneHeight + this.height || ((Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX)) < -(this.height / 2) || (Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX)) > canvas.width + (this.width / 2))))
             this.Death();
         if(this.LifeTime > 0)
             this.LifeTime -= DeltaTime;

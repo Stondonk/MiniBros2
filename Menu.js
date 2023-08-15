@@ -9,6 +9,8 @@ export default class MainMenu{
             y : 2,
             z : 0,
         }
+
+        this.CanDoLoad = false;
         
         this.MenuScreen = 0;
         this.HasAPressed = false;

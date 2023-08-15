@@ -1,7 +1,7 @@
 
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
-import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, EntityImage, boxbox} from "../index.js";
+import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, magnitude,MasterArrayLevelSize, EntityImage, boxbox, DeathPlaneHeight} from "../index.js";
 import player from "./Player.js";
 
 export default class PickUpOBJ{
@@ -201,6 +201,11 @@ export default class PickUpOBJ{
                 this.spriteOffsetY = 10;this.SpriteTweakY = -4;}
         }
         this.HasHitForY = false;
+
+        if(this.position.y >= DeathPlaneHeight + this.height || ((Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX) + this.SpriteTweakX) < -(this.height / 2) || (Math.round(this.position.x - cameraIntX - (this.SpriteWidth / 2) * this.SpriteScaleX) + this.SpriteTweakX) > canvas.width + (this.width / 2)) && this.Throw){
+            this.Death();
+        }
+
 
         if(this.HasCollision && this.NoPickUpCol){
             this.velocity.x = lerp(this.velocity.x, 0, 2 * DeltaTime);

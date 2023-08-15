@@ -7,6 +7,7 @@ import OptionsMenu from "./Options.js";
 import PickUpOBJ from "./BaseScripts/FloorVeg.js";
 import ShiGuy from "./BaseScripts/enemies/ShiGuy.js";
 import FlyGuy from "./BaseScripts/enemies/FlyGuy.js";
+import GoalOBJ from "./BaseScripts/Goal.js";
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
 
@@ -27,12 +28,13 @@ const MissItems = image("MissItems.png");
 var BGImg = image("CloudsBg1.png");
 var TileTextureImage = image("MinibrosTileSet.png");
 var PauseTimeSinc = 0;
-var DeathPlaneHeight = 0;
+var DeathPlaneHeight = 40;
 //transition Stuff
 var CharacterSpawnSet = 0;
 var TransitionVal = 0, ScreenTime = 1, OpenTransition = true, TransitionForTime = 1, TimeWhenStartTransition = 0, LevelToLoad = "", CurrentLevel = "";
 var MusicTrack = document.getElementById('MusicTrack'), MusicTrackTitle = "";
 var SFXTrack = document.getElementById('SFXTrack');
+var PauseSelect = 0, PausePress = false;
 window.SFXVolume = 1; 
 window.MusicVolume = 1;
 
@@ -279,6 +281,10 @@ export function LoadLevel(LevelName){
                 window.Players = [];
                 ShowGameUI = false;
                 NoPause = false;
+                cameraX = -32;
+                cameraY = -32;
+                cameraIntX = -32;
+                cameraIntY = -32;
 
                 const fileV = rawFile.responseText;
                 var HolderD = [];
@@ -364,6 +370,14 @@ export function LoadLevel(LevelName){
                                     //Pic.angle = parseFloat(CurrentObjectPriorityList[3]);
                                     window.Players.push(Pic);
                                 break;
+                                case "Goal":
+                                    var Gol = new GoalOBJ();
+                                    Gol.position.x = parseFloat(CurrentObjectPriorityList[1]);
+                                    Gol.position.y = parseFloat(CurrentObjectPriorityList[2]);
+                                    //Pic.angle = parseFloat(CurrentObjectPriorityList[3]);
+                                    Gol.LoadLevel = CurrentObjectPriorityList[4];
+                                    window.Players.push(Gol);
+                                break;
                                 case "Mushroom":
                                     var Mus = new PickUpOBJ();
                                     Mus.position.x = parseFloat(CurrentObjectPriorityList[1]);
@@ -402,6 +416,9 @@ export function LoadLevel(LevelName){
                                 break;
                                 case "BG":
                                     BGImg = image(CurrentObjectPriorityList[1]);
+                                break;
+                                case "DeathPlane":
+                                    DeathPlaneHeight = parseFloat(CurrentObjectPriorityList[1]);
                                 break;
                                 case "Music":
                                     PlayMusic(CurrentObjectPriorityList[1]);
@@ -593,7 +610,7 @@ export function DrawChar(charRef,x,y,rot){
     ctx.drawImage(TextImg,0, 8*CharIntLocal, 8, 8, x, y, 8, 8);
 }
 export function DrawText(TextRef,Side,x,y,rot){
-    var offX = 0, offY = 0;
+    var offX = 0, offY = 0, Centre = ((Side + 1) / 2) * (TextRef.length * 8);
     var EndCap = 0;
     for (let r = 0; r < TextRef.length; r++) {
         const element = TextRef[r];
@@ -604,7 +621,7 @@ export function DrawText(TextRef,Side,x,y,rot){
         if(element == '\n'){
             offY += 8; offX -= r * 8 + offX;
         }
-        DrawChar(element, x + r * 8 + offX, y + offY, rot);
+        DrawChar(element, x + r * 8 + offX - Centre, y + offY, rot);
     }
 }
 
@@ -839,14 +856,19 @@ function Update(){
     cameraIntY = Math.round(cameraY);
 
     if(Screen == 0){
-        DrawLevel(false);
         let SlotPreOrg = window.Players;
         SlotPreOrg.sort((a, b) => a.position.z - b.position.z);
         if(InBrows == true || NoPause == true){
             //inPlay
             if(JustPause == true)
                 MusicTrack.play();
-
+            
+            for (var i = 0; i < window.Players.length; i++) {
+                    var CheckXWidth = 0;
+                    if(window.Players[i].SelfDraw != true && window.Players[i].position.z < 0)
+                        window.Players[i].Draw();
+            }
+            DrawLevel(false);
             for (var i = 0; i < window.Players.length; i++) {
                 var CheckXWidth = 0;
                 if(window.Players[i].width != null)
@@ -855,7 +877,7 @@ function Update(){
                     window.Players[i].Update();
                 else if(window.Players[i].CanDoLoad == false)
                     window.Players[i].Update();
-                if(window.Players[i].SelfDraw != true)
+                if(window.Players[i].SelfDraw != true && window.Players[i].position.z >= 0)
                     window.Players[i].Draw();
                 //Players[i].Draw();
             }
@@ -870,12 +892,26 @@ function Update(){
             //paused
             JustPause = true;
             MusicTrack.pause();
-
+            DrawLevel(false);
             for (var i = 0; i < window.Players.length; i++) {
                 window.Players[i].Draw();
                 //Players[i].Draw();
             }
             //DrawLevel(true);
+
+            ctx.fillStyle = "#f4f4f4";
+            ctx.fillRect(8,32 + (PauseSelect*10), 48, 1);
+            if(PausePress == false && Inputs.y.Axis != 0)
+                {PauseSelect = clamp(PauseSelect - Inputs.y.Axis, 0, 1);   PausePress = true;}
+            else{
+                PausePress = false;}
+            if(Inputs.b.pressed == true ||Inputs.a.pressed == true  ){
+                InBrows = true;
+                if(PauseSelect == 1)
+                    LoadLevelTransition("Menu.lvl",1);
+            }
+            DrawText("RESUME",0,32,32 - 8,0);
+            DrawText("Quit",0,32,32 + 2,0);
 
             gameMastDrawFunc();
 
@@ -883,7 +919,7 @@ function Update(){
             ctx.fillStyle = "#ffffff";
             if(Math.round(PauseTimeSinc)%2 == 0)
             {
-                ctx.fillStyle = "#c7f0d8";
+                ctx.fillStyle = "#f4f4f4";
                 ctx.fillRect(0,0, 1, 64);
                 ctx.fillRect(0,0, 64, 1);
                 ctx.fillRect(63,0, 1, 64);
@@ -926,7 +962,7 @@ function Update(){
     if(MusicTrack.currentTime >= MusicTrack.duration)
         PlayMusic(MusicTrackTitle);
 
-    if(TimeWhenStartTransition <= TimeWhenStartTransition && TimeWhenStartTransition > 0)
+    if(TimeWhenStartTransition <= 1.5 && TimeWhenStartTransition > 0)
         OpenTransition = false;
 
     if(TimeWhenStartTransition > 0){
@@ -949,4 +985,4 @@ function Update(){
 
 }
 
-export {DeltaTime, cameraX, cameraIntX, cameraY, cameraIntY, MouseX, MouseY, PlayerImage, TitleImage, TextImg, MissItems, InBrows, EntityImage, MusicTrackTitle, MusicTrack, SFXTrack, CurrentLevel};
+export {DeltaTime, cameraX, cameraIntX, cameraY, cameraIntY, MouseX, MouseY, PlayerImage, TitleImage, TextImg, MissItems, InBrows, EntityImage, TileTextureImage, MusicTrackTitle, SpriteTileRef, MusicTrack, SFXTrack, CurrentLevel, DeathPlaneHeight};

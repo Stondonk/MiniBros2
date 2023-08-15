@@ -2,7 +2,7 @@
 const canvas = document.getElementById("GameArea");
 const ctx = canvas.getContext("2d");
 import RagDoll from "./RagDoll.js";
-import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, MouseX, MouseY, MasterArrayLevelSize, PlayerImage, lerpAngle, lineBlock, VeclineLine, magnitude, EntityImage, PlaySound, boxbox, PlayMusic, MusicTrack, LoadLevelTransition, CurrentLevel} from "../index.js";
+import {DeltaTime, cameraX, cameraY, cameraIntX, cameraIntY, drawImage, Inputs, lerp, LevelX, DEG2RAD, RAD2DEG, clamp,MoveCamTarget, MouseX, MouseY, MasterArrayLevelSize, PlayerImage, lerpAngle, lineBlock, VeclineLine, magnitude, EntityImage, PlaySound, boxbox, PlayMusic, MusicTrack, LoadLevelTransition, CurrentLevel, DeathPlaneHeight} from "../index.js";
 
 export default class player{
     constructor(){
@@ -503,7 +503,7 @@ export default class player{
             this.JustDuck = false;
 
         //Death
-        if(this.Health <= 0){
+        if(this.Health <= 0 || this.position.y >= DeathPlaneHeight + this.height){
             this.Death();
         }
 
