@@ -478,6 +478,8 @@ export function LoadLevel(LevelName){
                             break;
                     }
                     
+                    Last = Now;
+                    Now = Date.now();
                     DeltaTime = 0;
                     InBrows = false;
                 }
