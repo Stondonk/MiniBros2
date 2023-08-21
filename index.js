@@ -213,14 +213,14 @@ function controllerInput() {
 }
 
 function keydown(key){
-    if(key.key == "a" || key.key == "A"){
+    if(key.key == "a" || key.key == "A" || key.keyCode == 37){
         Inputs.x.L = true;}
-    if(key.key == "d"|| key.key == "D"){
+    if(key.key == "d"|| key.key == "D" || key.keyCode == 39){
         Inputs.x.R = true;}
 
-    if(key.key == "w"|| key.key == "W"){
+    if(key.key == "w"|| key.key == "W" || key.keyCode == 38){
         Inputs.y.U = true;}
-     if(key.key == "s"|| key.key == "S"){
+     if(key.key == "s"|| key.key == "S" || key.keyCode == 40){
         Inputs.y.D = true;}
 
     if(key.key == " "){
@@ -248,14 +248,14 @@ function keydown(key){
 }
 
 function keyup(key){
-    if(key.key == "a" || key.key == "A"){
+    if(key.key == "a" || key.key == "A" || key.keyCode == 37){
         Inputs.x.L = false;}
-    if(key.key == "d"|| key.key == "D"){
+    if(key.key == "d"|| key.key == "D" || key.keyCode == 39){
         Inputs.x.R = false;}
 
-    if(key.key == "w"|| key.key == "W"){
+    if(key.key == "w"|| key.key == "W" || key.keyCode == 38){
         Inputs.y.U = false;}
-    if(key.key == "s"|| key.key == "S"){
+    if(key.key == "s"|| key.key == "S" || key.keyCode == 40){
         Inputs.y.D = false;}
 
     if(key.key == " "){
